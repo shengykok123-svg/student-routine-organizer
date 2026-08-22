@@ -59,8 +59,8 @@ $isImage =
                                         </p>
                                     </section>
                                     <section class="content-card">
-                                        <p class="card-kicker">Evidence</p>
-                                            <h2>Workout evidence</h2>
+                                        <p class="card-kicker">File</p>
+                                            <h2>Workout file</h2>
                                                 <?php if ($attachment):
                                                     if ($isImage): ?>
                                                 <a href="<?= View::e(
@@ -72,7 +72,7 @@ $isImage =
                                                         $baseUrl,
                                                     ) ?>/uploads/exercise-evidence/<?= View::e(
                                                         $attachment["stored_name"],
-                                                    ) ?>" alt="Exercise evidence">
+                                                    ) ?>" alt="Exercise file">
                                                 </a>
                                                 <?php else: ?>
                                                 <div class="existing-file mb-3">
@@ -104,7 +104,7 @@ $isImage =
                                                     ] ?>">
                                                     <button class="btn btn-sm btn-outline-danger">
                                                         <i class="bi bi-trash3">
-                                                        </i> Remove evidence</button>
+                                                        </i> Remove file</button>
                                                     </form>
                                                     <?php
                                                 endif; ?>
@@ -119,19 +119,17 @@ $isImage =
                                                         ] ?>">
                                                         <label class="form-label" for="evidence">Upload <?= $attachment
                                                             ? "replacement"
-                                                            : "" ?> evidence</label>
+                                                            : "" ?> file</label>
                                                             <div class="input-group">
                                                                 <input class="form-control" id="evidence" type="file" name="evidence" accept="image/jpeg,image/png,application/pdf">
                                                                 <button class="btn btn-outline-primary">Upload</button>
                                                                 </div>
                                                             </form>
                                                         </section>
-                                                    </div>
-                                                    <div class="col-lg-5">
-                                                        <section class="content-card danger-zone">
+                                                        <section class="content-card danger-zone mt-3">
                                                             <p class="card-kicker">Danger zone</p>
                                                                 <h2>Delete Exercise</h2>
-                                                                    <p class="text-muted">This permanently removes the exercise record and its evidence.</p>
+                                                                    <p class="text-muted">This permanently removes the exercise record and its file.</p>
                                                                         <form method="post" action="<?= View::e(
                                                                             $baseUrl,
                                                                         ) ?>/exercise/delete" onsubmit="return confirm('Delete this exercise?')">
