@@ -17,6 +17,65 @@
   --sro-radius-sm: 9px;
   --sro-shadow: 0 8px 24px rgba(24, 35, 70, 0.07);
 }
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --sro-navy: #151d3c;
+  --sro-navy-dark: #0c1228;
+  --sro-primary: #9b88ff;
+  --sro-primary-dark: #b9adff;
+  --sro-primary-light: #2b2753;
+  --sro-bg: #111624;
+  --sro-surface: #1a2132;
+  --sro-text: #edf1ff;
+  --sro-muted: #aab5cb;
+  --sro-border: #303a52;
+  --sro-success: #54c98a;
+  --sro-danger: #ff7187;
+  --sro-warning: #ffc65a;
+  --sro-shadow: 0 10px 28px rgba(0, 0, 0, 0.27);
+}
+html[data-theme="dark"] .auth-body {
+  background: radial-gradient(circle at 20% 5%, #282151 0%, transparent 30%), #111624;
+}
+html[data-theme="dark"] .app-topbar,
+html[data-theme="dark"] .stat-card,
+html[data-theme="dark"] .form-control,
+html[data-theme="dark"] .form-select,
+html[data-theme="dark"] .input-group-text,
+html[data-theme="dark"] .modal-content,
+html[data-theme="dark"] .dropdown-menu,
+html[data-theme="dark"] .form-check-card,
+html[data-theme="dark"] .existing-file,
+html[data-theme="dark"] .budget-progress-item,
+html[data-theme="dark"] .money-budget-summary > div {
+  background: var(--sro-surface);
+  color: var(--sro-text);
+  border-color: var(--sro-border);
+}
+html[data-theme="dark"] .form-label,
+html[data-theme="dark"] .app-table thead th,
+html[data-theme="dark"] .app-table tbody td,
+html[data-theme="dark"] .dropdown-item,
+html[data-theme="dark"] .btn-outline-secondary {
+  color: var(--sro-text);
+}
+html[data-theme="dark"] .app-table thead th,
+html[data-theme="dark"] .app-table tbody tr:hover,
+html[data-theme="dark"] .record-count {
+  background: #20293d;
+  border-color: var(--sro-border);
+}
+html[data-theme="dark"] .app-table tbody td,
+html[data-theme="dark"] .app-table {
+  border-color: var(--sro-border);
+}
+html[data-theme="dark"] .btn-outline-secondary,
+html[data-theme="dark"] .btn-close {
+  border-color: var(--sro-border);
+}
+html[data-theme="dark"] .btn-close {
+  filter: invert(1);
+}
 /* Base */
 * {
   box-sizing: border-box;
@@ -204,6 +263,40 @@ h2 {
 }
 .topbar-spacer {
   flex: 1;
+}
+.theme-switcher-button {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  place-items: center;
+  border: 1px solid var(--sro-border);
+  background: var(--sro-surface);
+  color: var(--sro-primary);
+}
+.theme-switcher-button i {
+  margin: 0;
+}
+.theme-switcher .dropdown-menu {
+  min-width: 142px;
+  padding: 6px;
+  border-color: var(--sro-border);
+  box-shadow: var(--sro-shadow);
+}
+.theme-switcher .dropdown-item {
+  border-radius: 7px;
+  font-size: 0.85rem;
+}
+.theme-switcher .dropdown-item i {
+  width: 18px;
+  margin-right: 7px;
+}
+.landing-theme-switcher .theme-switcher-button {
+  width: 35px;
+  height: 35px;
+  border-color: #6a7399;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
 }
 .topbar-bell {
   position: relative;
@@ -477,6 +570,27 @@ textarea.form-control {
   border: 1px solid var(--sro-border);
   border-radius: 8px;
   background: #fafbfe;
+}
+.theme-setting-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.theme-setting-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--sro-border);
+  border-radius: 9px;
+  background: var(--sro-surface);
+  color: var(--sro-text);
+  cursor: pointer;
+  font-weight: 650;
+}
+.theme-setting-option:has(input:checked) {
+  border-color: var(--sro-primary);
+  background: var(--sro-primary-light);
 }
 .app-table {
   font-size: 0.86rem;
@@ -1602,5 +1716,8 @@ textarea.form-control {
   .money-budget-compact .card-section-heading > div:last-child {
     flex-wrap: wrap;
     justify-content: flex-end;
+  }
+  .theme-setting-options {
+    grid-template-columns: 1fr;
   }
 }

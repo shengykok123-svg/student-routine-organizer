@@ -39,11 +39,21 @@ use App\Core\View;
                                 <label class="form-check-label" for="email_notifications">Email notifications <span class="text-muted">(requires online mail configuration)</span>
                                 </label>
                             </div>
-                            <div class="mb-4">
+                                <div class="mb-4">
                                 <label class="form-label" for="reminder_time">Preferred reminder time</label>
                                     <input class="form-control" id="reminder_time" type="time" name="reminder_time" value="<?= View::e(
                                         $settings["reminder_time"] ?? "",
                                     ) ?>">
+                                </div>
+                                <p class="card-kicker">Appearance</p>
+                                <div class="theme-setting-options mb-4" role="radiogroup" aria-label="Theme preference">
+                                    <?php foreach (["light" => ["Light", "bi-sun"], "dark" => ["Dark", "bi-moon-stars"], "system" => ["System", "bi-display"]] as $value => [$label, $icon]): ?>
+                                        <label class="theme-setting-option">
+                                            <input type="radio" name="theme_preference" value="<?= View::e($value) ?>" <?= ($settings["theme_preference"] ?? "system") === $value ? "checked" : "" ?>>
+                                            <i class="bi <?= View::e($icon) ?>"></i>
+                                            <span><?= View::e($label) ?></span>
+                                        </label>
+                                    <?php endforeach; ?>
                                 </div>
                                 <hr class="my-4">
                                 <p class="card-kicker">Change password</p>

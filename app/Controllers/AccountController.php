@@ -146,8 +146,12 @@ final class AccountController extends Controller
             $errors[] = "Current password is incorrect.";
         }
         $time = (string) ($_POST["reminder_time"] ?? "");
+        $theme = (string) ($_POST["theme_preference"] ?? "system");
         if ($time !== "" && !preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', $time)) {
             $errors[] = "Choose a valid reminder time.";
+        }
+        if (!in_array($theme, ["light", "dark", "system"], true)) {
+            $errors[] = "Choose a valid theme preference.";
         }
         if ($errors) {
             $this->view("account/settings", [
@@ -160,6 +164,7 @@ final class AccountController extends Controller
                         $_POST["email_notifications"],
                     ),
                     "reminder_time" => $time,
+                    "theme_preference" => $theme,
                 ],
                 "errors" => $errors,
             ]);
@@ -170,12 +175,32 @@ final class AccountController extends Controller
             isset($_POST["in_app_notifications"]),
             isset($_POST["email_notifications"]),
             $time ?: null,
+            $theme,
         );
+        $this->auth->setThemePreference($theme);
         if ($password !== "") {
             $this->users->updatePassword($id, $password);
         }
         Flash::add("success", "Settings updated.");
         $this->redirect("settings");
+    }
+
+    /** Persists theme changes made from the header switcher without a page reload. */
+    public function updateTheme(): void
+    {
+        $this->requirePost();
+        $this->requireCsrf();
+        $theme = (string) ($_POST["theme"] ?? "system");
+        if (!in_array($theme, ["light", "dark", "system"], true)) {
+            http_response_code(422);
+            exit("Invalid theme preference.");
+        }
+        $id = $this->auth->requireLogin();
+        $this->settings->updateTheme($id, $theme);
+        $this->auth->setThemePreference($theme);
+        header("Content-Type: application/json; charset=UTF-8");
+        echo json_encode(["theme" => $theme]);
+        exit();
     }
 
     private function profileErrors(

@@ -17,6 +17,7 @@ $imageBase = View::e($baseUrl) . '/assets/images';
 $unreadNotificationCount = max(0, (int) ($unreadNotificationCount ?? 0));
 $notificationBadge = $unreadNotificationCount > 99 ? '99+' : (string) $unreadNotificationCount;
 $isAdmin = $authenticated && $auth->role() === 'Admin';
+$themePreference = $authenticated ? $auth->themePreference() : 'system';
 $homePath = $isAdmin ? 'admin' : 'dashboard';
 $navigation = $isAdmin ? [
     ['key' => 'admin-system', 'path' => 'admin', 'label' => 'System Administration', 'icon' => 'sidebar-admin-default.png'],
@@ -34,11 +35,20 @@ $navigation = $isAdmin ? [
 ];
 ?>
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme-preference="<?= View::e($themePreference) ?>" data-authenticated="<?= $authenticated ? '1' : '0' ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= View::e(($pageTitle ?? '') . ' | ' . $appName) ?></title>
+    <script>
+        (() => {
+            const root = document.documentElement;
+            const preference = root.dataset.authenticated === '1' ? root.dataset.themePreference : (localStorage.getItem('sro-theme-preference') || root.dataset.themePreference || 'system');
+            const theme = preference === 'system' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : preference;
+            root.dataset.themePreference = preference;
+            root.dataset.theme = theme;
+        })();
+    </script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?= View::e($baseUrl) ?>/assets/css/global.css">
@@ -51,7 +61,7 @@ $navigation = $isAdmin ? [
     <link rel="stylesheet" href="<?= View::e($baseUrl) ?>/assets/css/landing-redesign.css">
     <link rel="stylesheet" href="<?= View::e($baseUrl) ?>/assets/css/diary-reader.css">
 </head>
-<body class="<?= $authenticated ? 'app-body' : 'auth-body' ?>">
+<body class="<?= $authenticated ? 'app-body' : 'auth-body' ?>" data-theme-endpoint="<?= $authenticated ? View::e($baseUrl) . '/settings/theme' : '' ?>" data-theme-csrf="<?= $authenticated ? View::e(Csrf::token()) : '' ?>">
 <?php if ($authenticated): ?>
 <div class="app-shell">
     <aside class="app-sidebar d-none d-lg-flex">
@@ -67,7 +77,7 @@ $navigation = $isAdmin ? [
         <form class="sidebar-logout" method="post" action="<?= View::e($baseUrl) ?>/logout"><input type="hidden" name="_csrf" value="<?= View::e(Csrf::token()) ?>"><button type="submit"><img class="sidebar-icon" src="<?= $imageBase ?>/sidebar/sidebar-logout-default.png" alt=""><span>Logout</span></button></form>
     </aside>
     <div class="app-main">
-        <header class="app-topbar"><button class="btn menu-toggle d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNavigation" aria-label="Open navigation"><i class="bi bi-list"></i></button><div class="topbar-spacer"></div><a class="topbar-bell" href="<?= View::e($baseUrl) ?>/notifications" aria-label="Notifications<?= $unreadNotificationCount ? ': ' . View::e($notificationBadge) . ' unread' : '' ?>"><i class="bi bi-bell"></i><?php if ($unreadNotificationCount > 0): ?><span class="notification-count" aria-hidden="true"><?= View::e($notificationBadge) ?></span><?php endif; ?></a><div class="user-summary"><div><strong>Hello, <?= View::e($auth->username()) ?></strong><small><?= View::e($auth->role()) ?></small></div><?php if ($auth->profileImagePath()): ?><img class="user-avatar user-avatar-image" src="<?= View::e($baseUrl) ?>/profile/photo" alt="Profile picture"><?php else: ?><span class="user-avatar"><?= View::e(strtoupper(substr($auth->username(), 0, 1))) ?></span><?php endif; ?></div></header>
+        <header class="app-topbar"><button class="btn menu-toggle d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNavigation" aria-label="Open navigation"><i class="bi bi-list"></i></button><div class="topbar-spacer"></div><div class="dropdown theme-switcher"><button class="btn theme-switcher-button" id="themeSwitcher" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Change colour theme"><i class="bi bi-circle-half"></i></button><ul class="dropdown-menu dropdown-menu-end" aria-labelledby="themeSwitcher"><li><button class="dropdown-item" type="button" data-theme-choice="light"><i class="bi bi-sun"></i> Light</button></li><li><button class="dropdown-item" type="button" data-theme-choice="dark"><i class="bi bi-moon-stars"></i> Dark</button></li><li><button class="dropdown-item" type="button" data-theme-choice="system"><i class="bi bi-display"></i> System</button></li></ul></div><a class="topbar-bell" href="<?= View::e($baseUrl) ?>/notifications" aria-label="Notifications<?= $unreadNotificationCount ? ': ' . View::e($notificationBadge) . ' unread' : '' ?>"><i class="bi bi-bell"></i><?php if ($unreadNotificationCount > 0): ?><span class="notification-count" aria-hidden="true"><?= View::e($notificationBadge) ?></span><?php endif; ?></a><div class="user-summary"><div><strong>Hello, <?= View::e($auth->username()) ?></strong><small><?= View::e($auth->role()) ?></small></div><?php if ($auth->profileImagePath()): ?><img class="user-avatar user-avatar-image" src="<?= View::e($baseUrl) ?>/profile/photo" alt="Profile picture"><?php else: ?><span class="user-avatar"><?= View::e(strtoupper(substr($auth->username(), 0, 1))) ?></span><?php endif; ?></div></header>
         <main class="app-content">
 <?php else: ?>
 <main class="auth-main <?= ($pageTitle ?? '') === 'Welcome' ? 'landing-main' : '' ?>">

@@ -8,6 +8,7 @@ use App\Core\Auth;
 use App\Core\Session;
 use App\Models\Notification;
 use App\Models\User;
+use App\Models\UserSettings;
 use App\Services\RememberMeService;
 
 define("SRO_ROOT", dirname(__DIR__));
@@ -30,7 +31,7 @@ Session::start();
 $pdo = Database::connection();
 $users = new User($pdo);
 $notifications = new Notification($pdo);
-$auth = new Auth($users);
+$auth = new Auth($users, new UserSettings($pdo));
 $rememberMe = new RememberMeService();
 $GLOBALS["sro_auth"] = $auth;
 $GLOBALS["sro_notifications"] = $notifications;

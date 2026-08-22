@@ -74,6 +74,10 @@ $benefits = [
                                 </i> About</a>
                             </div>
                             <div class="landing-nav-actions">
+                                <div class="dropdown theme-switcher landing-theme-switcher">
+                                    <button class="btn theme-switcher-button" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Change colour theme"><i class="bi bi-circle-half"></i></button>
+                                    <ul class="dropdown-menu dropdown-menu-end"><li><button class="dropdown-item" type="button" data-theme-choice="light"><i class="bi bi-sun"></i> Light</button></li><li><button class="dropdown-item" type="button" data-theme-choice="dark"><i class="bi bi-moon-stars"></i> Dark</button></li><li><button class="dropdown-item" type="button" data-theme-choice="system"><i class="bi bi-display"></i> System</button></li></ul>
+                                </div>
                                 <a class="btn btn-outline-light" href="<?= View::e(
                                     $baseUrl,
                                 ) ?>/login">Login</a>

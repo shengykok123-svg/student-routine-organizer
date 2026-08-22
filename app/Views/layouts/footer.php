@@ -9,6 +9,10 @@
 </script>
 <script src="<?= \App\Core\View::e(
     $baseUrl,
+) ?>/assets/js/theme.js" defer>
+</script>
+<script src="<?= \App\Core\View::e(
+    $baseUrl,
 ) ?>/assets/js/dashboard-polish.js" defer>
 </script>
 <script src="<?= \App\Core\View::e(
@@ -22,6 +26,10 @@
 <script src="<?= \App\Core\View::e(
     $baseUrl,
 ) ?>/assets/js/landing-nav-scroll.js" defer>
+</script>
+<script src="<?= \App\Core\View::e(
+    $baseUrl,
+) ?>/assets/js/theme-charts.js" defer>
 </script>
 </body>
 </html>

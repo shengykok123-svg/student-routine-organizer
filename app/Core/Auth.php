@@ -6,11 +6,15 @@ namespace App\Core;
 
 use App\Config\App;
 use App\Models\User;
+use App\Models\UserSettings;
 
 /** Provides authentication and current-user helpers. */
 final class Auth
 {
-    public function __construct(private readonly User $users)
+    public function __construct(
+        private readonly User $users,
+        private readonly UserSettings $settings,
+    )
     {
     }
 
@@ -41,6 +45,14 @@ final class Auth
         return is_string($path) && $path !== "" ? $path : null;
     }
 
+    public function themePreference(): string
+    {
+        $theme = (string) ($_SESSION["theme_preference"] ?? "system");
+        return in_array($theme, ["light", "dark", "system"], true)
+            ? $theme
+            : "system";
+    }
+
     public function login(array $user): void
     {
         Session::regenerate();
@@ -48,6 +60,12 @@ final class Auth
         $_SESSION["username"] = (string) $user["username"];
         $_SESSION["role"] = (string) $user["role"];
         $_SESSION["profile_image_path"] = $user["profile_image_path"] ?? null;
+        $_SESSION["theme_preference"] = $user["theme_preference"] ?? ($this->settings->get((int) $user["user_id"])["theme_preference"] ?? "system");
+    }
+
+    public function setThemePreference(string $theme): void
+    {
+        $_SESSION["theme_preference"] = $theme;
     }
 
     public function logout(): void

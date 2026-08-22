@@ -92,6 +92,7 @@ $router->post("profile", [$accountController, "updateProfile"]);
 $router->get("profile/photo", [$accountController, "profileImage"]);
 $router->get("settings", [$accountController, "settings"]);
 $router->post("settings", [$accountController, "updateSettings"]);
+$router->post("settings/theme", [$accountController, "updateTheme"]);
 $router->get("notifications", [$notificationController, "index"]);
 $router->post("notifications/read", [$notificationController, "read"]);
 $router->get("exercise", [$exerciseController, "index"]);

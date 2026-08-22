@@ -28,11 +28,22 @@ final class UserSettings
         bool $inApp,
         bool $email,
         ?string $time,
+        string $theme,
     ): void {
         $this->pdo
             ->prepare(
-                "INSERT INTO user_settings (user_id,in_app_notifications,email_notifications,reminder_time) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE in_app_notifications=VALUES(in_app_notifications),email_notifications=VALUES(email_notifications),reminder_time=VALUES(reminder_time)",
+                "INSERT INTO user_settings (user_id,in_app_notifications,email_notifications,reminder_time,theme_preference) VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE in_app_notifications=VALUES(in_app_notifications),email_notifications=VALUES(email_notifications),reminder_time=VALUES(reminder_time),theme_preference=VALUES(theme_preference)",
             )
-            ->execute([$userId, $inApp ? 1 : 0, $email ? 1 : 0, $time]);
+            ->execute([$userId, $inApp ? 1 : 0, $email ? 1 : 0, $time, $theme]);
+    }
+
+    /** Saves only the visual theme preference for quick header switching. */
+    public function updateTheme(int $userId, string $theme): void
+    {
+        $this->pdo
+            ->prepare(
+                "INSERT INTO user_settings (user_id,theme_preference) VALUES (?,?) ON DUPLICATE KEY UPDATE theme_preference=VALUES(theme_preference)",
+            )
+            ->execute([$userId, $theme]);
     }
 }
