@@ -71,6 +71,8 @@ $router->post("register", [$authController, "register"]);
 $router->post("logout", [$authController, "logout"]);
 $router->get("dashboard", [$dashboardController, "index"]);
 $router->get("admin", [$adminController, "index"]);
+$router->get("admin/dashboard", [$adminController, "dashboard"]);
+$router->get("admin/users", [$adminController, "users"]);
 $router->get("admin/users/create", [$adminController, "createForm"]);
 $router->post("admin/users/store", [$adminController, "store"]);
 $router->get("admin/users/edit", [$adminController, "editForm"]);

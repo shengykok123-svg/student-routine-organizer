@@ -29,14 +29,31 @@ final class AdminController extends Controller
     public function index(): void
     {
         $this->auth->requireAdmin();
-        $filters = $this->userFilters();
         $this->view("admin/index", [
-            "pageTitle" => "Administration",
+            "pageTitle" => "System Administration",
             "summary" => $this->summary(),
-            "users" => $this->users->all(...$filters),
-            "filters" => array_combine(["search", "role", "status"], $filters),
+        ]);
+    }
+
+    public function dashboard(): void
+    {
+        $this->auth->requireAdmin();
+        $this->view("admin/dashboard", [
+            "pageTitle" => "Admin Dashboard",
+            "summary" => $this->summary(),
             "recentAudit" => $this->audit->recent(8),
             "recentAnnouncements" => $this->announcements->recent(4),
+        ]);
+    }
+
+    public function users(): void
+    {
+        $this->auth->requireAdmin();
+        $filters = $this->userFilters();
+        $this->view("admin/users", [
+            "pageTitle" => "User Management",
+            "users" => $this->users->all(...$filters),
+            "filters" => array_combine(["search", "role", "status"], $filters),
         ]);
     }
 
@@ -59,7 +76,7 @@ final class AdminController extends Controller
         $id = $this->users->create($data["username"], $data["email"], $data["password"], $data["full_name"], $data["role"]);
         $this->audit->record($adminId, "user_created", $id, $data["role"]);
         Flash::add("success", "User created.");
-        $this->redirect("admin");
+        $this->redirect("admin/users");
     }
 
     public function editForm(): void
@@ -68,7 +85,7 @@ final class AdminController extends Controller
         $user = $this->users->findById((int) ($_GET["id"] ?? 0));
         if (!$user) {
             Flash::add("error", "User not found.");
-            $this->redirect("admin");
+            $this->redirect("admin/users");
         }
         $this->view("admin/user_form", ["pageTitle" => "Edit User", "user" => $user, "errors" => []]);
     }
@@ -82,7 +99,7 @@ final class AdminController extends Controller
         $existing = $this->users->findById($id);
         if (!$existing) {
             Flash::add("error", "User not found.");
-            $this->redirect("admin");
+            $this->redirect("admin/users");
         }
         $data = $this->valid($_POST, false, $id);
         if ($id === $adminId && $data["role"] !== $existing["role"]) {
@@ -103,7 +120,7 @@ final class AdminController extends Controller
         }
         $this->audit->record($adminId, "user_updated", $id, $data["role"]);
         Flash::add("success", "User updated.");
-        $this->redirect("admin");
+        $this->redirect("admin/users");
     }
 
     public function delete(): void
@@ -123,7 +140,7 @@ final class AdminController extends Controller
             $this->audit->record($adminId, "user_deleted", $id, $user["username"]);
             Flash::add("success", "User deleted.");
         }
-        $this->redirect("admin");
+        $this->redirect("admin/users");
     }
 
     public function suspend(): void
@@ -233,7 +250,7 @@ final class AdminController extends Controller
             $this->audit->record($adminId, "account_" . strtolower($status), $id, $user["username"]);
             Flash::add("success", "Account {$status}.");
         }
-        $this->redirect("admin");
+        $this->redirect("admin/users");
     }
 
     private function summary(): array
