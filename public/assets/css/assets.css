@@ -1,6 +1,261 @@
 /* Supplied 26-asset integration. */
-.brand-logo{width:30px;height:30px;object-fit:contain;flex:0 0 30px}.sidebar-icon{width:21px;height:21px;object-fit:contain;flex:0 0 21px}.sidebar-link img.sidebar-icon{margin:0}.sidebar-logout .sidebar-icon{width:21px;height:21px}.sidebar-link.is-active .sidebar-icon{width:22px;height:22px}.landing-logo{width:34px;height:34px;object-fit:contain;flex:0 0 34px}.auth-brand-logo{width:27px;height:27px;object-fit:contain;flex:0 0 27px}.module-card-icon{width:60px;height:60px;object-fit:contain;display:block}.dashboard-stat-image{width:40px;height:40px;object-fit:contain}.empty-state-image{display:block;width:min(210px,100%);height:auto;object-fit:contain;margin:0 auto 12px}.motivation-illustration{width:150px;height:130px;object-fit:contain;align-self:flex-end}.dashboard-calorie-chart{height:205px}.motivation-card{display:flex;align-items:center;justify-content:space-between;gap:14px;background:linear-gradient(135deg,#fbfaff,#f4f1ff)}.motivation-card h2{font-size:1.05rem}.motivation-card p:last-child{margin:0;color:var(--sro-muted);font-size:.82rem;max-width:240px}
-.landing-page{background:var(--sro-bg)}.landing-nav{position:relative;z-index:2;background:#fff}.landing-hero-band{background:radial-gradient(circle at 83% 20%,#3b3296 0%,#1d2861 40%,#101936 100%);color:#fff}.landing-hero{min-height:570px;padding:64px 0;gap:42px}.landing-copy .page-eyebrow{color:#bbaeff}.landing-copy h1{color:#fff;max-width:600px}.landing-copy>p:not(.page-eyebrow){color:#d9ddf2}.landing-copy .btn-primary{background:#7b5cf2;border-color:#7b5cf2}.landing-copy .btn-primary:hover{background:#8a70ff;border-color:#8a70ff}.landing-copy .btn-outline-light{border-color:rgba(255,255,255,.55);color:#fff}.landing-copy .btn-outline-light:hover{background:#fff;color:var(--sro-navy)}.landing-hero-art{padding:11px;border-radius:24px;background:rgba(255,255,255,.12);box-shadow:0 24px 48px rgba(5,10,35,.3)}.landing-hero-illustration{display:block;width:100%;max-width:610px;height:auto;object-fit:contain;border-radius:17px}.landing-features{background:transparent;border:0}.landing-feature{padding:26px}.landing-feature h3{margin-top:18px}.landing-feature:nth-child(1){border-top:3px solid #5479ee}.landing-feature:nth-child(2){border-top:3px solid #8a65f5}.landing-feature:nth-child(3){border-top:3px solid var(--sro-success)}.landing-feature:nth-child(4){border-top:3px solid var(--sro-warning)}
-.auth-brand{color:inherit}.auth-visual .auth-brand{color:#fff}.auth-illustration{display:block;width:min(100%,300px);height:auto;object-fit:contain;margin:auto auto 10px}.auth-visual-art{display:none}.auth-register-layout{width:min(920px,100%);display:grid;grid-template-columns:1fr minmax(400px,515px);align-items:center;gap:32px}.register-visual{text-align:center;color:var(--sro-navy);padding:16px}.register-visual p{margin:12px auto 0;font-weight:700;max-width:250px}.register-illustration{width:min(100%,290px);height:auto;object-fit:contain}.auth-register-layout .auth-register-card{width:100%}
-@media(max-width:991px){.landing-hero{min-height:0;padding:52px 0}.landing-hero-art{max-width:650px;margin:auto}.auth-register-layout{display:block;width:min(515px,100%)}.register-visual{display:none}.motivation-illustration{width:130px;height:115px}}
-@media(max-width:575px){.landing-logo{width:28px;height:28px}.landing-copy h1{font-size:2.05rem}.landing-hero-band .landing-container{padding:0 18px}.landing-hero{padding:48px 0}.landing-hero-art{padding:7px;border-radius:16px}.landing-hero-illustration{border-radius:11px}.auth-illustration{width:190px}.motivation-card{align-items:flex-start}.motivation-illustration{width:100px;height:90px}.dashboard-stat-image{width:38px;height:38px}}
+.brand-logo {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  flex: 0 0 30px;
+}
+.sidebar-icon {
+  width: 21px;
+  height: 21px;
+  object-fit: contain;
+  flex: 0 0 21px;
+}
+.sidebar-link img.sidebar-icon {
+  margin: 0;
+}
+.sidebar-logout .sidebar-icon {
+  width: 21px;
+  height: 21px;
+}
+.sidebar-link.is-active .sidebar-icon {
+  width: 22px;
+  height: 22px;
+}
+.landing-logo {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  flex: 0 0 34px;
+}
+.auth-brand-logo {
+  width: 27px;
+  height: 27px;
+  object-fit: contain;
+  flex: 0 0 27px;
+}
+.module-card-icon {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  display: block;
+}
+.dashboard-stat-image {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+.empty-state-image {
+  display: block;
+  width: min(210px, 100%);
+  height: auto;
+  object-fit: contain;
+  margin: 0 auto 12px;
+}
+.motivation-illustration {
+  width: 150px;
+  height: 130px;
+  object-fit: contain;
+  align-self: flex-end;
+}
+.dashboard-calorie-chart {
+  height: 205px;
+}
+.motivation-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: linear-gradient(135deg, #fbfaff, #f4f1ff);
+}
+.motivation-card h2 {
+  font-size: 1.05rem;
+}
+.motivation-card p:last-child {
+  margin: 0;
+  color: var(--sro-muted);
+  font-size: 0.82rem;
+  max-width: 240px;
+}
+.landing-page {
+  background: var(--sro-bg);
+}
+.landing-nav {
+  position: relative;
+  z-index: 2;
+  background: #fff;
+}
+.landing-hero-band {
+  background: radial-gradient(
+    circle at 83% 20%,
+    #3b3296 0%,
+    #1d2861 40%,
+    #101936 100%
+  );
+  color: #fff;
+}
+.landing-hero {
+  min-height: 570px;
+  padding: 64px 0;
+  gap: 42px;
+}
+.landing-copy .page-eyebrow {
+  color: #bbaeff;
+}
+.landing-copy h1 {
+  color: #fff;
+  max-width: 600px;
+}
+.landing-copy > p:not(.page-eyebrow) {
+  color: #d9ddf2;
+}
+.landing-copy .btn-primary {
+  background: #7b5cf2;
+  border-color: #7b5cf2;
+}
+.landing-copy .btn-primary:hover {
+  background: #8a70ff;
+  border-color: #8a70ff;
+}
+.landing-copy .btn-outline-light {
+  border-color: rgba(255, 255, 255, 0.55);
+  color: #fff;
+}
+.landing-copy .btn-outline-light:hover {
+  background: #fff;
+  color: var(--sro-navy);
+}
+.landing-hero-art {
+  padding: 11px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 24px 48px rgba(5, 10, 35, 0.3);
+}
+.landing-hero-illustration {
+  display: block;
+  width: 100%;
+  max-width: 610px;
+  height: auto;
+  object-fit: contain;
+  border-radius: 17px;
+}
+.landing-features {
+  background: transparent;
+  border: 0;
+}
+.landing-feature {
+  padding: 26px;
+}
+.landing-feature h3 {
+  margin-top: 18px;
+}
+.landing-feature:nth-child(1) {
+  border-top: 3px solid #5479ee;
+}
+.landing-feature:nth-child(2) {
+  border-top: 3px solid #8a65f5;
+}
+.landing-feature:nth-child(3) {
+  border-top: 3px solid var(--sro-success);
+}
+.landing-feature:nth-child(4) {
+  border-top: 3px solid var(--sro-warning);
+}
+.auth-brand {
+  color: inherit;
+}
+.auth-visual .auth-brand {
+  color: #fff;
+}
+.auth-illustration {
+  display: block;
+  width: min(100%, 300px);
+  height: auto;
+  object-fit: contain;
+  margin: auto auto 10px;
+}
+.auth-visual-art {
+  display: none;
+}
+.auth-register-layout {
+  width: min(920px, 100%);
+  display: grid;
+  grid-template-columns: 1fr minmax(400px, 515px);
+  align-items: center;
+  gap: 32px;
+}
+.register-visual {
+  text-align: center;
+  color: var(--sro-navy);
+  padding: 16px;
+}
+.register-visual p {
+  margin: 12px auto 0;
+  font-weight: 700;
+  max-width: 250px;
+}
+.register-illustration {
+  width: min(100%, 290px);
+  height: auto;
+  object-fit: contain;
+}
+.auth-register-layout .auth-register-card {
+  width: 100%;
+}
+@media (max-width: 991px) {
+  .landing-hero {
+    min-height: 0;
+    padding: 52px 0;
+  }
+  .landing-hero-art {
+    max-width: 650px;
+    margin: auto;
+  }
+  .auth-register-layout {
+    display: block;
+    width: min(515px, 100%);
+  }
+  .register-visual {
+    display: none;
+  }
+  .motivation-illustration {
+    width: 130px;
+    height: 115px;
+  }
+}
+@media (max-width: 575px) {
+  .landing-logo {
+    width: 28px;
+    height: 28px;
+  }
+  .landing-copy h1 {
+    font-size: 2.05rem;
+  }
+  .landing-hero-band .landing-container {
+    padding: 0 18px;
+  }
+  .landing-hero {
+    padding: 48px 0;
+  }
+  .landing-hero-art {
+    padding: 7px;
+    border-radius: 16px;
+  }
+  .landing-hero-illustration {
+    border-radius: 11px;
+  }
+  .auth-illustration {
+    width: 190px;
+  }
+  .motivation-card {
+    align-items: flex-start;
+  }
+  .motivation-illustration {
+    width: 100px;
+    height: 90px;
+  }
+  .dashboard-stat-image {
+    width: 38px;
+    height: 38px;
+  }
+}

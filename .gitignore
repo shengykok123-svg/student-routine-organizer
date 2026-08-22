@@ -12,6 +12,8 @@ WORKSPACE_HANDOFF.md
 !/public/uploads/profile/.htaccess
 /public/uploads/money-receipts/*
 !/public/uploads/money-receipts/.htaccess
+/public/uploads/money/*
+!/public/uploads/money/.htaccess
 
 # Local environment and operating-system files
 .env

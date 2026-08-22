@@ -6,6 +6,7 @@ namespace App\Core;
 
 use App\Config\App;
 
+/** Base helpers shared by HTTP controllers. */
 abstract class Controller
 {
     /** @param array<string,mixed> $data */
@@ -16,24 +17,26 @@ abstract class Controller
 
     protected function redirect(string $path): never
     {
-        header('Location: ' . App::url($path), true, 303);
-        exit;
+        header("Location: " . App::url($path), true, 303);
+        exit();
     }
 
     protected function requirePost(): void
     {
-        if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
+        if (($_SERVER["REQUEST_METHOD"] ?? "GET") !== "POST") {
             http_response_code(405);
-            header('Allow: POST');
-            exit('This action accepts POST requests only.');
+            header("Allow: POST");
+            exit("This action accepts POST requests only.");
         }
     }
 
     protected function requireCsrf(): void
     {
-        if (!Csrf::valid($_POST['_csrf'] ?? null)) {
+        if (!Csrf::valid($_POST["_csrf"] ?? null)) {
             http_response_code(403);
-            exit('Your form session has expired. Please return to the form and try again.');
+            exit(
+                "Your form session has expired. Please return to the form and try again."
+            );
         }
     }
 }

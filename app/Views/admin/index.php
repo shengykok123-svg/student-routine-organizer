@@ -1,2 +1,170 @@
-<?php use App\Core\Csrf; use App\Core\View; ?>
-<section class="page-heading"><div><p class="page-eyebrow">Administrator only</p><h1>System Administration</h1><p class="page-subtitle">Registered users and live system summaries.</p></div><div class="d-flex gap-2"><span class="record-count align-self-center">Total Users: <?= (int)$summary['users'] ?></span><a class="btn btn-primary" href="<?= View::e($baseUrl) ?>/admin/users/create"><i class="bi bi-person-plus"></i> Add User</a></div></section><section class="admin-summary mb-4"><?php foreach(['students'=>['Students','bi-people'], 'exercises'=>['Exercises','bi-activity'], 'diary_entries'=>['Diary Entries','bi-journal-bookmark'], 'money_records'=>['Money Records','bi-cash-stack'], 'habits'=>['Habits','bi-bullseye']] as $key=>[$label,$icon]): ?><article class="content-card admin-stat"><i class="bi <?= $icon ?> text-primary fs-5"></i><strong><?= (int)$summary[$key] ?></strong><span><?= $label ?></span></article><?php endforeach; ?></section><section class="content-card p-0 overflow-hidden"><div class="card-section-heading"><div><p class="card-kicker">Registered accounts</p><h2>User Management</h2></div></div><div class="table-responsive"><table class="table app-table align-middle mb-0"><thead><tr><th>ID</th><th>Name / Username</th><th>Email</th><th>Role</th><th>Joined</th><th class="text-end">Actions</th></tr></thead><tbody><?php foreach ($users as $user): ?><tr><td>#<?= (int)$user['user_id'] ?></td><td><strong><?= View::e($user['full_name']?:$user['username']) ?></strong><small class="d-block text-muted">@<?= View::e($user['username']) ?></small></td><td><?= View::e($user['email']) ?></td><td><span class="status-pill <?= $user['role']==='Admin'?'status-active':'status-completed' ?>"><?= View::e($user['role']) ?></span></td><td><?= View::e(date('d M Y',strtotime($user['created_at']))) ?></td><td><div class="table-actions justify-content-end"><a class="btn btn-sm btn-outline-primary" href="<?= View::e($baseUrl) ?>/admin/users/edit?id=<?= (int)$user['user_id'] ?>"><i class="bi bi-pencil"></i></a><form method="post" action="<?= View::e($baseUrl) ?>/admin/users/delete" onsubmit="return confirm('Delete this user and all owned records?')"><input type="hidden" name="_csrf" value="<?= View::e(Csrf::token()) ?>"><input type="hidden" name="user_id" value="<?= (int)$user['user_id'] ?>"><button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash3"></i></button></form></div></td></tr><?php endforeach; ?><?php if(!$users): ?><tr><td colspan="6"><div class="empty-state">No registered users found.</div></td></tr><?php endif; ?></tbody></table></div></section>
+<?php use App\Core\Csrf;
+use App\Core\View;
+
+?>
+<section class="page-heading">
+    <div>
+        <p class="page-eyebrow">Administrator only</p>
+            <h1>System Administration</h1>
+                <p class="page-subtitle">Registered users and live system summaries.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <span class="record-count align-self-center">Total Users: <?= (int) $summary[
+                        "users"
+                    ] ?>
+                    </span>
+                    <a class="btn btn-primary" href="<?= View::e(
+                        $baseUrl,
+                    ) ?>/admin/users/create">
+                        <i class="bi bi-person-plus">
+                        </i> Add User</a>
+                    </div>
+                </section>
+                <section class="admin-summary mb-4">
+                    <?php foreach (
+                        [
+                            "students" => ["Students", "bi-people"],
+                            "exercises" => ["Exercises", "bi-activity"],
+                            "diary_entries" => [
+                                "Diary Entries",
+                                "bi-journal-bookmark",
+                            ],
+                            "money_records" => [
+                                "Money Records",
+                                "bi-cash-stack",
+                            ],
+                            "habits" => ["Habits", "bi-bullseye"],
+                        ] as $key => [$label, $icon]
+                    ): ?>
+                    <article class="content-card admin-stat">
+                        <i class="bi <?= $icon ?> text-primary fs-5">
+                        </i>
+                        <strong>
+                            <?= (int) $summary[$key] ?>
+                        </strong>
+                        <span>
+                            <?= $label ?>
+                        </span>
+                    </article>
+                    <?php endforeach; ?>
+                </section>
+                <section class="content-card p-0 overflow-hidden">
+                    <div class="card-section-heading">
+                        <div>
+                            <p class="card-kicker">Registered accounts</p>
+                                <h2>User Management</h2>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table app-table align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                                <th>Name / Username</th>
+                                                    <th>Email</th>
+                                                        <th>Role</th>
+                                                            <th>Joined</th>
+                                                                <th class="text-end">Actions</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <?php
+                                                                foreach (
+                                                                    $users as $user
+                                                                ): ?>
+                                                                <tr>
+                                                                    <td>#<?= (int) $user[
+                                                                        "user_id"
+                                                                    ] ?>
+                                                                    </td>
+                                                                    <td>
+                                                                        <strong>
+                                                                            <?= View::e(
+                                                                                $user[
+                                                                                    "full_name"
+                                                                                ] ?:
+                                                                                $user[
+                                                                                    "username"
+                                                                                ],
+                                                                            ) ?>
+                                                                        </strong>
+                                                                        <small class="d-block text-muted">@<?= View::e(
+                                                                            $user[
+                                                                                "username"
+                                                                            ],
+                                                                        ) ?>
+                                                                        </small>
+                                                                    </td>
+                                                                    <td>
+                                                                        <?= View::e(
+                                                                            $user[
+                                                                                "email"
+                                                                            ],
+                                                                        ) ?>
+                                                                    </td>
+                                                                    <td>
+                                                                        <span class="status-pill <?= $user[
+                                                                            "role"
+                                                                        ] ===
+                                                                        "Admin"
+                                                                            ? "status-active"
+                                                                            : "status-completed" ?>">
+                                                                            <?= View::e(
+                                                                                $user[
+                                                                                    "role"
+                                                                                ],
+                                                                            ) ?>
+                                                                        </span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <?= View::e(
+                                                                            date(
+                                                                                "d M Y",
+                                                                                strtotime(
+                                                                                    $user[
+                                                                                        "created_at"
+                                                                                    ],
+                                                                                ),
+                                                                            ),
+                                                                        ) ?>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="table-actions justify-content-end">
+                                                                            <a class="btn btn-sm btn-outline-primary" href="<?= View::e(
+                                                                                $baseUrl,
+                                                                            ) ?>/admin/users/edit?id=<?= (int) $user[
+    "user_id"
+] ?>">
+                                                                                <i class="bi bi-pencil">
+                                                                                </i>
+                                                                            </a>
+                                                                            <form method="post" action="<?= View::e(
+                                                                                $baseUrl,
+                                                                            ) ?>/admin/users/delete" onsubmit="return confirm('Delete this user and all owned records?')">
+                                                                                <input type="hidden" name="_csrf" value="<?= View::e(
+                                                                                    Csrf::token(),
+                                                                                ) ?>">
+                                                                                <input type="hidden" name="user_id" value="<?= (int) $user[
+                                                                                    "user_id"
+                                                                                ] ?>">
+                                                                                <button class="btn btn-sm btn-outline-danger">
+                                                                                    <i class="bi bi-trash3">
+                                                                                    </i>
+                                                                                </button>
+                                                                            </form>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <?php endforeach;
+if (!$users): ?>
+                                                                <tr>
+                                                                    <td colspan="6">
+                                                                        <div class="empty-state">No registered users found.</div>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <?php endif;
+?>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </section>

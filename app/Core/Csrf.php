@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+/** Generates and verifies CSRF protection tokens. */
 final class Csrf
 {
-    private const KEY = '_csrf_token';
+    private const KEY = "_csrf_token";
 
     public static function token(): string
     {
@@ -18,9 +19,9 @@ final class Csrf
 
     public static function valid(mixed $token): bool
     {
-        return is_string($token)
-            && isset($_SESSION[self::KEY])
-            && is_string($_SESSION[self::KEY])
-            && hash_equals($_SESSION[self::KEY], $token);
+        return is_string($token) &&
+            isset($_SESSION[self::KEY]) &&
+            is_string($_SESSION[self::KEY]) &&
+            hash_equals($_SESSION[self::KEY], $token);
     }
 }
