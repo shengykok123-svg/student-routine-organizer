@@ -35,6 +35,54 @@ $stats = [
 <section class="admin-summary admin-dashboard-summary mb-4">
     <?php foreach ($stats as [$label, $value, $icon, $color]): ?><article class="content-card admin-stat"><i class="bi <?= $icon ?> <?= $color ?> fs-5"></i><strong><?= View::e((string) $value) ?></strong><span><?= View::e($label) ?></span></article><?php endforeach; ?>
 </section>
+<div id="adminCharts" data-chart="<?= View::e((string) json_encode($charts, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_HEX_TAG)) ?>">
+    <section class="dashboard-grid mb-4">
+        <article class="content-card">
+            <div class="card-section-heading">
+                <div>
+                    <p class="card-kicker"><?= View::e($periodLabel) ?></p>
+                    <h2>Module Usage</h2>
+                </div>
+                <i class="bi bi-bar-chart-line text-primary fs-4"></i>
+            </div>
+            <div class="chart-area">
+                <canvas id="adminModuleUsageChart" aria-label="Module record counts"></canvas>
+            </div>
+        </article>
+        <article class="content-card">
+            <div class="card-section-heading">
+                <div>
+                    <p class="card-kicker"><?= View::e($periodLabel) ?></p>
+                    <h2>New Account Status</h2>
+                </div>
+                <i class="bi bi-people text-primary fs-4"></i>
+            </div>
+            <?php if (array_sum($charts["user_status"]["values"]) > 0): ?>
+                <div class="chart-area">
+                    <canvas id="adminUserStatusChart" aria-label="New accounts by current status"></canvas>
+                </div>
+            <?php else: ?>
+                <p class="text-muted mb-0">No accounts were created in this period.</p>
+            <?php endif; ?>
+        </article>
+    </section>
+    <section class="content-card mb-4">
+        <div class="card-section-heading">
+            <div>
+                <p class="card-kicker"><?= View::e($periodLabel) ?></p>
+                <h2>System Activity Trend</h2>
+            </div>
+            <i class="bi bi-graph-up-arrow text-primary fs-4"></i>
+        </div>
+        <?php if ($charts["activity_trend"]["labels"]): ?>
+            <div class="chart-area">
+                <canvas id="adminActivityTrendChart" aria-label="System activity over time"></canvas>
+            </div>
+        <?php else: ?>
+            <p class="text-muted mb-0">No module activity was recorded in this period.</p>
+        <?php endif; ?>
+    </section>
+</div>
 <section class="dashboard-grid">
     <article class="content-card">
         <div class="card-section-heading"><div><p class="card-kicker">Latest activity</p><h2>Audit Snapshot</h2></div><a class="small" href="<?= View::e($baseUrl) ?>/admin/audit">View all</a></div>
@@ -47,3 +95,5 @@ $stats = [
         <?php if (!$recentAnnouncements): ?><p class="text-muted mb-0">No announcements have been published yet.</p><?php endif; ?>
     </article>
 </section>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="<?= View::e($baseUrl) ?>/assets/js/admin-dashboard-charts.js" defer></script>

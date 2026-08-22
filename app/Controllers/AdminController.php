@@ -44,8 +44,10 @@ final class AdminController extends Controller
         }
 
         $metrics = $this->dashboardMetrics($range);
+        $charts = $this->dashboardCharts($range, $metrics);
         $this->view("admin/dashboard", [
             "pageTitle" => "Admin Dashboard",
+            "charts" => $charts,
             "metrics" => $metrics,
             "periodLabel" => $metrics["period_label"],
             "range" => $range,
@@ -276,13 +278,7 @@ final class AdminController extends Controller
     /** Returns aggregate, non-identifying metrics for the selected dashboard period. */
     private function dashboardMetrics(string $range): array
     {
-        $periods = [
-            "7" => ["start" => date("Y-m-d", strtotime("-6 days")), "label" => "Recent 7 Days"],
-            "30" => ["start" => date("Y-m-d", strtotime("-29 days")), "label" => "Recent 30 Days"],
-            "90" => ["start" => date("Y-m-d", strtotime("-89 days")), "label" => "Recent 90 Days"],
-            "all" => ["start" => null, "label" => "All Time"],
-        ];
-        $period = $periods[$range];
+        $period = $this->dashboardPeriod($range);
         $start = $period["start"];
 
         $count = function (string $table, string $dateColumn) use ($start): int {
@@ -313,6 +309,118 @@ final class AdminController extends Controller
             "announcements" => $count("announcements", "created_at"),
             "audit_actions" => $count("admin_audit_logs", "created_at"),
         ];
+    }
+
+    /** Builds the chart datasets used by the aggregate administrator dashboard. */
+    private function dashboardCharts(string $range, array $metrics): array
+    {
+        $period = $this->dashboardPeriod($range);
+
+        return [
+            "module_usage" => [
+                "labels" => ["Exercises", "Diary", "Money", "Habit check-ins"],
+                "values" => [
+                    $metrics["exercises"],
+                    $metrics["diary_entries"],
+                    $metrics["money_records"],
+                    $metrics["habit_checkins"],
+                ],
+            ],
+            "user_status" => $this->dashboardUserStatus($period["start"]),
+            "activity_trend" => $this->dashboardActivityTrend($period["start"], $range),
+        ];
+    }
+
+    /** Groups new accounts by their current role and account status. */
+    private function dashboardUserStatus(?string $start): array
+    {
+        $labels = ["Active Students", "Suspended Students", "Active Admins", "Suspended Admins"];
+        $values = array_fill_keys($labels, 0);
+        $sql = "SELECT role, account_status, COUNT(*) AS total FROM users";
+        if ($start !== null) {
+            $sql .= " WHERE created_at >= ?";
+        }
+        $sql .= " GROUP BY role, account_status";
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute($start === null ? [] : [$start]);
+        foreach ($statement->fetchAll() as $row) {
+            $label = ($row["account_status"] === "Suspended" ? "Suspended" : "Active") . " " . ($row["role"] === "Admin" ? "Admins" : "Students");
+            if (isset($values[$label])) {
+                $values[$label] = (int) $row["total"];
+            }
+        }
+
+        return ["labels" => $labels, "values" => array_values($values)];
+    }
+
+    /** Groups module records into daily, weekly, or monthly activity chart points. */
+    private function dashboardActivityTrend(?string $start, string $range): array
+    {
+        $modules = [
+            "Exercises" => ["exercises", "exercise_date"],
+            "Diary" => ["diary_entries", "entry_date"],
+            "Money" => ["money_records", "transaction_date"],
+            "Habit check-ins" => ["habit_logs", "check_in_date"],
+        ];
+        $bucketTemplate = match ($range) {
+            "7" => "%s",
+            "all" => "DATE_FORMAT(%s, '%%Y-%%m-01')",
+            default => "DATE_SUB(%s, INTERVAL WEEKDAY(%s) DAY)",
+        };
+        $buckets = [];
+        $records = array_fill_keys(array_keys($modules), []);
+
+        foreach ($modules as $label => [$table, $dateColumn]) {
+            $bucket = $range === "30" || $range === "90"
+                ? sprintf($bucketTemplate, $dateColumn, $dateColumn)
+                : sprintf($bucketTemplate, $dateColumn);
+            $sql = "SELECT {$bucket} AS period_date, COUNT(*) AS total FROM {$table}";
+            if ($start !== null) {
+                $sql .= " WHERE {$dateColumn} >= ?";
+            }
+            $sql .= " GROUP BY period_date ORDER BY period_date";
+
+            $statement = $this->pdo->prepare($sql);
+            $statement->execute($start === null ? [] : [$start]);
+            foreach ($statement->fetchAll() as $row) {
+                $periodDate = (string) $row["period_date"];
+                $buckets[$periodDate] = $this->trendLabel($periodDate, $range);
+                $records[$label][$periodDate] = (int) $row["total"];
+            }
+        }
+
+        ksort($buckets);
+        $datasets = [];
+        foreach ($records as $label => $totals) {
+            $datasets[$label] = array_map(
+                static fn (string $date): int => $totals[$date] ?? 0,
+                array_keys($buckets),
+            );
+        }
+
+        return ["labels" => array_values($buckets), "datasets" => $datasets];
+    }
+
+    /** Selects a bounded time period for dashboard queries. */
+    private function dashboardPeriod(string $range): array
+    {
+        return match ($range) {
+            "7" => ["start" => date("Y-m-d", strtotime("-6 days")), "label" => "Recent 7 Days"],
+            "90" => ["start" => date("Y-m-d", strtotime("-89 days")), "label" => "Recent 90 Days"],
+            "all" => ["start" => null, "label" => "All Time"],
+            default => ["start" => date("Y-m-d", strtotime("-29 days")), "label" => "Recent 30 Days"],
+        };
+    }
+
+    /** Formats database grouping dates for readable chart labels. */
+    private function trendLabel(string $date, string $range): string
+    {
+        return match ($range) {
+            "7" => date("d M", strtotime($date)),
+            "all" => date("M Y", strtotime($date)),
+            default => "Week of " . date("d M", strtotime($date)),
+        };
     }
 
     /** @return array{0:string,1:string,2:string} */
