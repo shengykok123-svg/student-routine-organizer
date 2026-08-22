@@ -189,6 +189,17 @@ html[data-theme="dark"] .landing-benefit strong {
   color: var(--sro-text) !important;
 }
 
+/* Keep the quick-toggle centred with its neighbouring navigation controls. */
+.landing-nav-actions,
+.topbar-controls {
+  align-items: center;
+}
+
+.landing-nav-actions .theme-toggle {
+  min-width: 0;
+  padding: 0;
+}
+
 html[data-theme="dark"] .register-visual-copy > p:last-child,
 html[data-theme="dark"] .register-visual-caption {
   color: var(--sro-muted) !important;

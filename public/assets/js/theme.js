@@ -4,6 +4,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const body = document.body;
   const choices = document.querySelectorAll("[data-theme-choice]");
   const themeToggle = document.querySelector("[data-theme-toggle]");
+  const settingsForm = document.querySelector("[data-theme-settings-form]");
+  const serverPreference =
+    root.dataset.serverThemePreference ||
+    root.dataset.themePreference ||
+    "system";
 
   const resolvedTheme = (preference) =>
     preference === "system"
@@ -60,6 +65,22 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   updateThemeToggle();
+
+  // Carry the most recent explicit choice between the guest site and the account.
+  if (
+    body.dataset.themeEndpoint &&
+    ["light", "dark"].includes(root.dataset.themePreference) &&
+    root.dataset.themePreference !== serverPreference
+  ) {
+    savePreference(root.dataset.themePreference);
+  }
+
+  settingsForm?.addEventListener("submit", () => {
+    const preference = settingsForm.querySelector(
+      'input[name="theme_preference"]:checked',
+    )?.value;
+    if (preference) localStorage.setItem("sro-theme-preference", preference);
+  });
 
   window
     .matchMedia("(prefers-color-scheme: dark)")

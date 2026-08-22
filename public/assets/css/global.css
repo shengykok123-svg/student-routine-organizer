@@ -269,7 +269,7 @@ h2 {
   display: flex;
   align-items: center;
   gap: 12px;
-  min-height: 34px;
+  height: 32px;
 }
 .theme-switcher-button {
   display: grid;
@@ -285,6 +285,10 @@ h2 {
   margin: 0;
 }
 .theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
   width: 48px;
   height: 28px;
   padding: 0;

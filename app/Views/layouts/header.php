@@ -35,7 +35,7 @@ $navigation = $isAdmin ? [
 ];
 ?>
 <!doctype html>
-<html lang="en" data-theme-preference="<?= View::e($themePreference) ?>" data-authenticated="<?= $authenticated ? '1' : '0' ?>">
+<html lang="en" data-theme-preference="<?= View::e($themePreference) ?>" data-server-theme-preference="<?= View::e($themePreference) ?>" data-authenticated="<?= $authenticated ? '1' : '0' ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -43,7 +43,10 @@ $navigation = $isAdmin ? [
     <script>
         (() => {
             const root = document.documentElement;
-            const preference = root.dataset.authenticated === '1' ? root.dataset.themePreference : (localStorage.getItem('sro-theme-preference') || root.dataset.themePreference || 'system');
+            const serverPreference = root.dataset.serverThemePreference || 'system';
+            const savedPreference = localStorage.getItem('sro-theme-preference');
+            const savedExplicitPreference = ['light', 'dark'].includes(savedPreference) ? savedPreference : null;
+            const preference = savedExplicitPreference || serverPreference;
             const theme = preference === 'system' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : preference;
             root.dataset.themePreference = preference;
             root.dataset.theme = theme;

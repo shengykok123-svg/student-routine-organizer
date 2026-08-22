@@ -17,7 +17,7 @@ use App\Core\View;
             </div>
             <?php endforeach; ?>
             <section class="form-panel">
-                <form method="post" action="<?= View::e($baseUrl) ?>/settings">
+                <form method="post" action="<?= View::e($baseUrl) ?>/settings" data-theme-settings-form>
                     <input type="hidden" name="_csrf" value="<?= View::e(
                         Csrf::token(),
                     ) ?>">
