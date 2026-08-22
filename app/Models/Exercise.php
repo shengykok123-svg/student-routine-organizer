@@ -22,7 +22,23 @@ final class Exercise
             $where[] = "activity_type LIKE :search";
             $params[":search"] = "%" . $filters["search"] . "%";
         }
-        if (($filters["activity"] ?? "") !== "") {
+        if (($filters["activity"] ?? "") === "Others") {
+            $standardActivities = [
+                "Walking",
+                "Jogging",
+                "Cycling",
+                "Gym",
+                "Swimming",
+                "Badminton",
+            ];
+            $placeholders = [];
+            foreach ($standardActivities as $index => $activity) {
+                $placeholder = ":standard_activity_" . $index;
+                $placeholders[] = $placeholder;
+                $params[$placeholder] = $activity;
+            }
+            $where[] = "activity_type NOT IN (" . implode(", ", $placeholders) . ")";
+        } elseif (($filters["activity"] ?? "") !== "") {
             $where[] = "activity_type = :activity";
             $params[":activity"] = $filters["activity"];
         }

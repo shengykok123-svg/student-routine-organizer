@@ -8,6 +8,7 @@ $activityIcons = [
     "Cycling" => "bi-bicycle",
     "Gym" => "gym-dumbbell",
     "Swimming" => "bi-water",
+    "Others" => "bi-three-dots",
 ];
 
 ?>
@@ -129,7 +130,7 @@ $activityIcons = [
                                                                                 <tr>
                                                                                     <td>
                                                                                         <div class="d-flex align-items-center gap-2">
-                                                                                            <?php $activityIcon = $activityIcons[$record["activity_type"]] ?? "bi-activity"; ?>
+                                                                                            <?php $activityIcon = $activityIcons[$record["activity_type"]] ?? "bi-three-dots"; ?>
                                                                                             <span class="activity-badge" title="<?= View::e($record["activity_type"]) ?>">
                                                                                                 <?php if ($activityIcon === "badminton-racket"): ?>
                                                                                                     <svg viewBox="0 0 24 24" width="18" height="18" role="img" aria-label="Badminton racket" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">

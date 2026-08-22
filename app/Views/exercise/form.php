@@ -3,6 +3,14 @@ use App\Core\View;
 use App\Services\ExerciseValidationService;
 
 $isEdit = isset($record["exercise_id"]);
+$currentActivity = (string) ($record["activity_type"] ?? "");
+$isCustomActivity =
+    $currentActivity !== "" &&
+    !in_array($currentActivity, ExerciseValidationService::ACTIVITIES, true);
+$selectedActivity = $isCustomActivity ? "Others" : $currentActivity;
+$customActivity = $isCustomActivity
+    ? $currentActivity
+    : (string) ($record["other_activity_type"] ?? "");
 ?>
 <section class="page-heading">
     <div>
@@ -52,27 +60,19 @@ if (isset($duplicateToken)): ?>
                                 <?php foreach (
                                     ExerciseValidationService::ACTIVITIES as $activity
                                 ): ?>
-                                <option <?= ($record["activity_type"] ?? "") ===
-                                $activity
+                                <option <?= $selectedActivity === $activity
                                     ? "selected"
                                     : "" ?>>
                                     <?= View::e($activity) ?>
                                 </option>
                                 <?php endforeach; ?>
-                                <option value="Other" <?= ($record[
-                                    "activity_type"
-                                ] ??
-                                    "") ===
-                                "Other"
-                                    ? "selected"
-                                    : "" ?>>Other</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label" for="other_activity_type">Custom activity <span class="text-muted">(if Other)</span>
+                                <label class="form-label" for="other_activity_type">Custom activity <span class="text-muted">(if Others)</span>
                                 </label>
                                 <input class="form-control" id="other_activity_type" name="other_activity_type" value="<?= View::e(
-                                    $record["other_activity_type"] ?? "",
+                                    $customActivity,
                                 ) ?>" placeholder="Describe your activity">
                             </div>
                             <div class="col-md-4">

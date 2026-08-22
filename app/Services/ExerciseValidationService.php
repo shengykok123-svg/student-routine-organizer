@@ -14,6 +14,7 @@ final class ExerciseValidationService
         "Gym",
         "Swimming",
         "Badminton",
+        "Others",
     ];
     public const SORTS = [
         "newest" => "Newest first",
@@ -27,7 +28,7 @@ final class ExerciseValidationService
     {
         $errors = [];
         $activity = trim((string) ($input["activity_type"] ?? ""));
-        if ($activity === "Other") {
+        if ($activity === "Others") {
             $activity = trim((string) ($input["other_activity_type"] ?? ""));
         }
         $duration = filter_var(
