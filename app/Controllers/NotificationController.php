@@ -1,4 +1,44 @@
 <?php
-declare(strict_types=1); namespace App\Controllers;
-use App\Core\Auth;use App\Core\Controller;use App\Core\Flash;use App\Models\Notification;
-final class NotificationController extends Controller { public function __construct(private readonly Auth $auth,private readonly Notification $notifications){} public function index():void{$id=$this->auth->requireLogin();$this->view('notifications/index',['pageTitle'=>'Notifications','notifications'=>$this->notifications->list($id)]);} public function read():void{$this->requirePost();$this->requireCsrf();$id=$this->auth->requireLogin();if(isset($_POST['all']))$this->notifications->markAllRead($id);else $this->notifications->markRead((int)($_POST['notification_id']??0),$id);Flash::add('success','Notifications updated.');$this->redirect('notifications');} }
+
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Core\Auth;
+use App\Core\Controller;
+use App\Core\Flash;
+use App\Models\Notification;
+
+/** Handles notification listing and read-state actions. */
+final class NotificationController extends Controller
+{
+    public function __construct(
+        private readonly Auth $auth,
+        private readonly Notification $notifications,
+    ) {
+    }
+    public function index(): void
+    {
+        $id = $this->auth->requireLogin();
+        $this->view("notifications/index", [
+            "pageTitle" => "Notifications",
+            "notifications" => $this->notifications->list($id),
+        ]);
+    }
+    public function read(): void
+    {
+        $this->requirePost();
+        $this->requireCsrf();
+        $id = $this->auth->requireLogin();
+        if (isset($_POST["all"])) {
+            $this->notifications->markAllRead($id);
+        } else {
+            $this->notifications->markRead(
+                (int) ($_POST["notification_id"] ?? 0),
+                $id,
+            );
+        }
+        Flash::add("success", "Notifications updated.");
+        $this->redirect("notifications");
+    }
+}

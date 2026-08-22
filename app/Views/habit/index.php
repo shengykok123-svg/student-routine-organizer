@@ -1,2 +1,250 @@
-<?php use App\Core\Csrf; use App\Core\View; ?>
-<section class="page-heading"><div><p class="page-eyebrow">Routine consistency</p><h1>Habit Tracker</h1><p class="page-subtitle">Build small routines that add up every day.</p></div><a class="btn btn-primary" href="<?= View::e($baseUrl) ?>/habit/create"><i class="bi bi-plus-lg"></i> Add Habit</a></section><section class="content-card chart-card mb-3"><div class="card-section-heading px-0 pt-0"><div><p class="card-kicker">Last seven days</p><h2>Weekly Consistency</h2></div></div><canvas id="habitChart"></canvas></section><section class="filter-panel mb-3"><form method="get" class="row g-3 align-items-end"><div class="col-md-6"><label class="form-label" for="search">Search habits</label><input class="form-control" id="search" name="search" placeholder="Search habits..." value="<?= View::e($search) ?>"></div><div class="col-md-4"><label class="form-label" for="status">Status</label><select class="form-select" id="status" name="status"><option value="">All statuses</option><option <?= $status==='Active'?'selected':'' ?>>Active</option><option <?= $status==='Completed'?'selected':'' ?>>Completed</option></select></div><div class="col-md-2"><button class="btn btn-outline-primary w-100"><i class="bi bi-funnel"></i> Filter</button></div></form></section><section class="content-card p-0 overflow-hidden"><div class="table-responsive"><table class="table app-table align-middle mb-0"><thead><tr><th>Habit</th><th>Frequency</th><th>Streak</th><th>Status</th><th class="text-end">Action</th></tr></thead><tbody><?php foreach($habits as $habit): ?><tr><td><strong><?= View::e($habit['habit_name']) ?></strong></td><td><?= View::e($habit['frequency']) ?></td><td><i class="bi bi-fire text-warning me-1"></i><?= (int)$habit['streak'] ?> days</td><td><span class="status-pill <?= $habit['status']==='Completed'?'status-completed':'status-active' ?>"><?= View::e($habit['status']) ?></span></td><td><div class="table-actions justify-content-end"><button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#check<?= (int)$habit['habit_id'] ?>"><i class="bi bi-check2"></i> Check In</button><a class="btn btn-sm btn-outline-primary" href="<?= View::e($baseUrl) ?>/habit/edit?id=<?= (int)$habit['habit_id'] ?>" aria-label="Edit"><i class="bi bi-pencil"></i></a><form method="post" action="<?= View::e($baseUrl) ?>/habit/delete" onsubmit="return confirm('Delete this habit?')"><input type="hidden" name="_csrf" value="<?= View::e(Csrf::token()) ?>"><input type="hidden" name="habit_id" value="<?= (int)$habit['habit_id'] ?>"><button class="btn btn-sm btn-outline-danger" aria-label="Delete"><i class="bi bi-trash3"></i></button></form></div></td></tr><?php endforeach; ?><?php if(!$habits): ?><tr><td colspan="5"><div class="empty-state"><div class="empty-icon"><i class="bi bi-bullseye"></i></div><h3>No habits found</h3><p>Create your first habit and check in every day.</p><a class="btn btn-primary" href="<?= View::e($baseUrl) ?>/habit/create">Add Habit</a></div></td></tr><?php endif; ?></tbody></table></div></section><?php foreach($habits as $habit): ?><div class="modal fade" id="check<?= (int)$habit['habit_id'] ?>" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><form class="modal-content" method="post" action="<?= View::e($baseUrl) ?>/habit/check-in"><input type="hidden" name="_csrf" value="<?= View::e(Csrf::token()) ?>"><input type="hidden" name="habit_id" value="<?= (int)$habit['habit_id'] ?>"><div class="modal-header"><div><p class="card-kicker mb-1">Daily progress</p><h2 class="modal-title">Check In: <?= View::e($habit['habit_name']) ?></h2></div><button class="btn-close" data-bs-dismiss="modal" type="button"></button></div><div class="modal-body"><label class="form-label">Sleep Quality</label><select class="form-select mb-3" name="sleep_quality"><option>Poor</option><option>Fair</option><option>Good</option><option>Excellent</option></select><label class="form-label">Diet Adherence</label><select class="form-select mb-3" name="diet_adherence"><option>Poor</option><option>Fair</option><option>Good</option><option>Excellent</option></select><label class="form-label">Stress Level</label><select class="form-select mb-3" name="stress_level"><option>Low</option><option>Moderate</option><option>High</option><option>Severe</option></select><label class="form-label">Notes <span class="text-muted">(optional)</span></label><textarea class="form-control" name="notes" maxlength="255" rows="3"></textarea></div><div class="modal-footer"><button class="btn btn-primary"><i class="bi bi-check2-circle"></i> Submit Check In</button></div></form></div></div><?php endforeach; ?><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script>const habitCanvas=document.getElementById('habitChart');if(habitCanvas){new Chart(habitCanvas,{type:'line',data:{labels:<?= json_encode(array_map(static fn($d)=>date('D',strtotime($d)),array_keys($week))) ?>,datasets:[{label:'Check-ins completed',data:<?= json_encode(array_values($week)) ?>,borderColor:'#6547e8',backgroundColor:'rgba(101,71,232,.12)',fill:true,tension:.35,pointRadius:4,pointBackgroundColor:'#6547e8'}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{stepSize:1,precision:0},grid:{color:'#edf0f5'}}}}});}</script>
+<?php use App\Core\Csrf;
+use App\Core\View;
+
+?>
+<section class="page-heading">
+    <div>
+        <p class="page-eyebrow">Routine consistency</p>
+            <h1>Habit Tracker</h1>
+                <p class="page-subtitle">Build small routines that add up every day.</p>
+                </div>
+                <a class="btn btn-primary" href="<?= View::e(
+                    $baseUrl,
+                ) ?>/habit/create">
+                    <i class="bi bi-plus-lg">
+                    </i> Add Habit</a>
+                </section>
+                <section class="content-card chart-card mb-3">
+                    <div class="card-section-heading px-0 pt-0">
+                        <div>
+                            <p class="card-kicker">Last seven days</p>
+                                <h2>Weekly Consistency</h2>
+                                </div>
+                            </div>
+                            <canvas id="habitChart">
+                            </canvas>
+                        </section>
+                        <section class="filter-panel mb-3">
+                            <form method="get" class="row g-3 align-items-end">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="search">Search habits</label>
+                                        <input class="form-control" id="search" name="search" placeholder="Search habits..." value="<?= View::e(
+                                            $search,
+                                        ) ?>">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label" for="status">Status</label>
+                                            <select class="form-select" id="status" name="status">
+                                                <option value="">All statuses</option>
+                                                    <option <?= $status ===
+                                                    "Active"
+                                                        ? "selected"
+                                                        : "" ?>>Active</option>
+                                                        <option <?= $status ===
+                                                        "Completed"
+                                                            ? "selected"
+                                                            : "" ?>>Completed</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <button class="btn btn-outline-primary w-100">
+                                                            <i class="bi bi-funnel">
+                                                            </i> Filter</button>
+                                                        </div>
+                                                    </form>
+                                                </section>
+                                                <section class="content-card p-0 overflow-hidden">
+                                                    <div class="table-responsive">
+                                                        <table class="table app-table align-middle mb-0">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Habit</th>
+                                                                        <th>Frequency</th>
+                                                                            <th>Streak</th>
+                                                                                <th>Status</th>
+                                                                                    <th class="text-end">Action</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    <?php
+                                                                                    foreach (
+                                                                                        $habits as $habit
+                                                                                    ): ?>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <strong>
+                                                                                                <?= View::e(
+                                                                                                    $habit[
+                                                                                                        "habit_name"
+                                                                                                    ],
+                                                                                                ) ?>
+                                                                                            </strong>
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <?= View::e(
+                                                                                                $habit[
+                                                                                                    "frequency"
+                                                                                                ],
+                                                                                            ) ?>
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <i class="bi bi-fire text-warning me-1">
+                                                                                            </i>
+                                                                                            <?= (int) $habit[
+                                                                                                "streak"
+                                                                                            ] ?> days</td>
+                                                                                            <td>
+                                                                                                <span class="status-pill <?= $habit[
+                                                                                                    "status"
+                                                                                                ] ===
+                                                                                                "Completed"
+                                                                                                    ? "status-completed"
+                                                                                                    : "status-active" ?>">
+                                                                                                    <?= View::e(
+                                                                                                        $habit[
+                                                                                                            "status"
+                                                                                                        ],
+                                                                                                    ) ?>
+                                                                                                </span>
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <div class="table-actions justify-content-end">
+                                                                                                    <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#check<?= (int) $habit[
+                                                                                                        "habit_id"
+                                                                                                    ] ?>">
+                                                                                                        <i class="bi bi-check2">
+                                                                                                        </i> Check In</button>
+                                                                                                        <a class="btn btn-sm btn-outline-primary" href="<?= View::e(
+                                                                                                            $baseUrl,
+                                                                                                        ) ?>/habit/edit?id=<?= (int) $habit[
+    "habit_id"
+] ?>" aria-label="Edit">
+                                                                                                            <i class="bi bi-pencil">
+                                                                                                            </i>
+                                                                                                        </a>
+                                                                                                        <form method="post" action="<?= View::e(
+                                                                                                            $baseUrl,
+                                                                                                        ) ?>/habit/delete" onsubmit="return confirm('Delete this habit?')">
+                                                                                                            <input type="hidden" name="_csrf" value="<?= View::e(
+                                                                                                                Csrf::token(),
+                                                                                                            ) ?>">
+                                                                                                            <input type="hidden" name="habit_id" value="<?= (int) $habit[
+                                                                                                                "habit_id"
+                                                                                                            ] ?>">
+                                                                                                            <button class="btn btn-sm btn-outline-danger" aria-label="Delete">
+                                                                                                                <i class="bi bi-trash3">
+                                                                                                                </i>
+                                                                                                            </button>
+                                                                                                        </form>
+                                                                                                    </div>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                            <?php endforeach;
+if (
+    !$habits
+): ?>
+                                                                                            <tr>
+                                                                                                <td colspan="5">
+                                                                                                    <div class="empty-state">
+                                                                                                        <div class="empty-icon">
+                                                                                                            <i class="bi bi-bullseye">
+                                                                                                            </i>
+                                                                                                        </div>
+                                                                                                        <h3>No habits found</h3>
+                                                                                                            <p>Create your first habit and check in every day.</p>
+                                                                                                                <a class="btn btn-primary" href="<?= View::e(
+                                                                                                                    $baseUrl,
+                                                                                                                ) ?>/habit/create">Add Habit</a>
+                                                                                                                </div>
+                                                                                                            </td>
+                                                                                                        </tr>
+                                                                                                        <?php endif;
+?>
+                                                                                                    </tbody>
+                                                                                                </table>
+                                                                                            </div>
+                                                                                        </section>
+                                                                                        <?php foreach (
+                                                                                            $habits as $habit
+                                                                                        ): ?>
+                                                                                        <div class="modal fade" id="check<?= (int) $habit[
+                                                                                            "habit_id"
+                                                                                        ] ?>" tabindex="-1">
+                                                                                            <div class="modal-dialog modal-dialog-centered">
+                                                                                                <form class="modal-content" method="post" action="<?= View::e(
+                                                                                                    $baseUrl,
+                                                                                                ) ?>/habit/check-in">
+                                                                                                    <input type="hidden" name="_csrf" value="<?= View::e(
+                                                                                                        Csrf::token(),
+                                                                                                    ) ?>">
+                                                                                                    <input type="hidden" name="habit_id" value="<?= (int) $habit[
+                                                                                                        "habit_id"
+                                                                                                    ] ?>">
+                                                                                                    <div class="modal-header">
+                                                                                                        <div>
+                                                                                                            <p class="card-kicker mb-1">Daily progress</p>
+                                                                                                                <h2 class="modal-title">Check In: <?= View::e(
+                                                                                                                    $habit[
+                                                                                                                        "habit_name"
+                                                                                                                    ],
+                                                                                                                ) ?>
+                                                                                                                </h2>
+                                                                                                            </div>
+                                                                                                            <button class="btn-close" data-bs-dismiss="modal" type="button">
+                                                                                                            </button>
+                                                                                                        </div>
+                                                                                                        <div class="modal-body">
+                                                                                                            <label class="form-label">Sleep Quality</label>
+                                                                                                                <select class="form-select mb-3" name="sleep_quality">
+                                                                                                                    <option>Poor</option>
+                                                                                                                        <option>Fair</option>
+                                                                                                                            <option>Good</option>
+                                                                                                                                <option>Excellent</option>
+                                                                                                                                </select>
+                                                                                                                                <label class="form-label">Diet Adherence</label>
+                                                                                                                                    <select class="form-select mb-3" name="diet_adherence">
+                                                                                                                                        <option>Poor</option>
+                                                                                                                                            <option>Fair</option>
+                                                                                                                                                <option>Good</option>
+                                                                                                                                                    <option>Excellent</option>
+                                                                                                                                                    </select>
+                                                                                                                                                    <label class="form-label">Stress Level</label>
+                                                                                                                                                        <select class="form-select mb-3" name="stress_level">
+                                                                                                                                                            <option>Low</option>
+                                                                                                                                                                <option>Moderate</option>
+                                                                                                                                                                    <option>High</option>
+                                                                                                                                                                        <option>Severe</option>
+                                                                                                                                                                        </select>
+                                                                                                                                                                        <label class="form-label">Notes <span class="text-muted">(optional)</span>
+                                                                                                                                                                        </label>
+                                                                                                                                                                        <textarea class="form-control" name="notes" maxlength="255" rows="3">
+                                                                                                                                                                        </textarea>
+                                                                                                                                                                    </div>
+                                                                                                                                                                    <div class="modal-footer">
+                                                                                                                                                                        <button class="btn btn-primary">
+                                                                                                                                                                            <i class="bi bi-check2-circle">
+                                                                                                                                                                            </i> Submit Check In</button>
+                                                                                                                                                                        </div>
+                                                                                                                                                                    </form>
+                                                                                                                                                                </div>
+                                                                                                                                                            </div>
+                                                                                                                                                            <?php endforeach; ?>
+                                                                                                                                                            <script src="https://cdn.jsdelivr.net/npm/chart.js">
+                                                                                                                                                            </script>
+                                                                                                                                                            <script>const habitCanvas=document.getElementById('habitChart');if(habitCanvas){new Chart(habitCanvas,{type:'line',data:{labels:<?= json_encode(
+                                                                                                                                                                array_map(
+                                                                                                                                                                    static fn (
+                                                                                                                                                                        $d,
+                                                                                                                                                                    ) => date(
+                                                                                                                                                                        "D",
+                                                                                                                                                                        strtotime(
+                                                                                                                                                                            $d,
+                                                                                                                                                                        ),
+                                                                                                                                                                    ),
+                                                                                                                                                                    array_keys(
+                                                                                                                                                                        $week,
+                                                                                                                                                                    ),
+                                                                                                                                                                ),
+                                                                                                                                                            ) ?>,datasets:[{label:'Check-ins completed',data:<?= json_encode(
+                                                                                                                                                                array_values($week),
+                                                                                                                                                            ) ?>,borderColor:'#6547e8',backgroundColor:'rgba(101,71,232,.12)',fill:true,tension:.35,pointRadius:4,pointBackgroundColor:'#6547e8'}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{stepSize:1,precision:0},grid:{color:'#edf0f5'}}}}});}</script>

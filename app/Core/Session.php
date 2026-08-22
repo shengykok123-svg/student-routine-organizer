@@ -6,6 +6,7 @@ namespace App\Core;
 
 use App\Config\App;
 
+/** Starts and maintains the application session. */
 final class Session
 {
     public static function start(): void
@@ -14,13 +15,13 @@ final class Session
             return;
         }
 
-        $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+        $https = !empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off";
         session_set_cookie_params([
-            'lifetime' => 0,
-            'path' => App::cookiePath(),
-            'secure' => $https,
-            'httponly' => true,
-            'samesite' => 'Lax',
+            "lifetime" => 0,
+            "path" => App::cookiePath(),
+            "secure" => $https,
+            "httponly" => true,
+            "samesite" => "Lax",
         ]);
         session_start();
     }
@@ -33,15 +34,15 @@ final class Session
     public static function destroy(): void
     {
         $_SESSION = [];
-        if (ini_get('session.use_cookies')) {
+        if (ini_get("session.use_cookies")) {
             $params = session_get_cookie_params();
-            setcookie(session_name(), '', [
-                'expires' => time() - 3600,
-                'path' => (string) ($params['path'] ?? '/'),
-                'domain' => (string) ($params['domain'] ?? ''),
-                'secure' => (bool) ($params['secure'] ?? false),
-                'httponly' => (bool) ($params['httponly'] ?? true),
-                'samesite' => (string) ($params['samesite'] ?? 'Lax'),
+            setcookie(session_name(), "", [
+                "expires" => time() - 3600,
+                "path" => (string) ($params["path"] ?? "/"),
+                "domain" => (string) ($params["domain"] ?? ""),
+                "secure" => (bool) ($params["secure"] ?? false),
+                "httponly" => (bool) ($params["httponly"] ?? true),
+                "samesite" => (string) ($params["samesite"] ?? "Lax"),
             ]);
         }
         session_destroy();

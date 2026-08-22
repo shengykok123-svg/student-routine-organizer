@@ -1,2 +1,97 @@
-<?php use App\Core\Csrf; use App\Core\View; $edit=isset($user['user_id']); ?>
-<section class="page-heading"><div><p class="page-eyebrow">System administration</p><h1><?= $edit?'Edit User':'Add User' ?></h1><p class="page-subtitle">Create or manage a registered account.</p></div><a class="btn btn-outline-secondary" href="<?= View::e($baseUrl) ?>/admin"><i class="bi bi-arrow-left"></i> Back</a></section><?php foreach($errors as$error): ?><div class="app-flash flash-error"><i class="bi bi-exclamation-circle-fill"></i><?= View::e($error) ?></div><?php endforeach; ?><section class="form-panel"><form method="post" action="<?= View::e($baseUrl) ?>/admin/users/<?= $edit?'update':'store' ?>"><input type="hidden" name="_csrf" value="<?= View::e(Csrf::token()) ?>"><?php if($edit): ?><input type="hidden" name="user_id" value="<?= (int)$user['user_id'] ?>"><?php endif; ?><div class="row g-4"><div class="col-12"><label class="form-label" for="full_name">Full Name</label><input class="form-control" id="full_name" name="full_name" required value="<?= View::e($user['full_name']??'') ?>"></div><div class="col-md-6"><label class="form-label" for="username">Username</label><input class="form-control" id="username" name="username" required value="<?= View::e($user['username']??'') ?>"></div><div class="col-md-6"><label class="form-label" for="email">Email</label><input class="form-control" id="email" name="email" type="email" required value="<?= View::e($user['email']??'') ?>"></div><div class="col-md-6"><label class="form-label" for="role">Role</label><select class="form-select" id="role" name="role"><option value="Student" <?= ($user['role']??'Student')==='Student'?'selected':'' ?>>Student</option><option value="Admin" <?= ($user['role']??'')==='Admin'?'selected':'' ?>>Admin</option></select></div><div class="col-md-6"><label class="form-label" for="password">Password <?= $edit?'<span class="text-muted">(leave blank to keep)</span>':'<span class="text-danger">*</span>' ?></label><input class="form-control" id="password" type="password" name="password" <?= $edit?'':'required' ?> minlength="6"></div></div><div class="form-actions"><button class="btn btn-primary"><i class="bi bi-check2-circle"></i> <?= $edit?'Save User':'Create User' ?></button></div></form></section>
+<?php use App\Core\Csrf;
+use App\Core\View;
+
+$edit = isset($user["user_id"]);
+?>
+<section class="page-heading">
+    <div>
+        <p class="page-eyebrow">System administration</p>
+            <h1>
+                <?= $edit ? "Edit User" : "Add User" ?>
+            </h1>
+            <p class="page-subtitle">Create or manage a registered account.</p>
+            </div>
+            <a class="btn btn-outline-secondary" href="<?= View::e(
+                $baseUrl,
+            ) ?>/admin">
+                <i class="bi bi-arrow-left">
+                </i> Back</a>
+            </section>
+            <?php foreach ($errors as $error): ?>
+            <div class="app-flash flash-error">
+                <i class="bi bi-exclamation-circle-fill">
+                </i>
+                <?= View::e($error) ?>
+            </div>
+            <?php endforeach; ?>
+            <section class="form-panel">
+                <form method="post" action="<?= View::e(
+                    $baseUrl,
+                ) ?>/admin/users/<?= $edit ? "update" : "store" ?>">
+                    <input type="hidden" name="_csrf" value="<?= View::e(
+                        Csrf::token(),
+                    ) ?>">
+                    <?php if ($edit): ?>
+                    <input type="hidden" name="user_id" value="<?= (int) $user[
+                        "user_id"
+                    ] ?>">
+                    <?php endif; ?>
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <label class="form-label" for="full_name">Full Name</label>
+                                <input class="form-control" id="full_name" name="full_name" required value="<?= View::e(
+                                    $user["full_name"] ?? "",
+                                ) ?>">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="username">Username</label>
+                                    <input class="form-control" id="username" name="username" required value="<?= View::e(
+                                        $user["username"] ?? "",
+                                    ) ?>">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="email">Email</label>
+                                        <input class="form-control" id="email" name="email" type="email" required value="<?= View::e(
+                                            $user["email"] ?? "",
+                                        ) ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="role">Role</label>
+                                            <select class="form-select" id="role" name="role">
+                                                <option value="Student" <?= ($user[
+                                                    "role"
+                                                ] ??
+                                                    "Student") ===
+                                                "Student"
+                                                    ? "selected"
+                                                    : "" ?>>Student</option>
+                                                    <option value="Admin" <?= ($user[
+                                                        "role"
+                                                    ] ??
+                                                        "") ===
+                                                    "Admin"
+                                                        ? "selected"
+                                                        : "" ?>>Admin</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label" for="password">Password <?= $edit
+                                                        ? '<span class="text-muted">(leave blank to keep)</span>'
+                                                        : '<span class="text-danger">*</span>' ?>
+                                                    </label>
+                                                    <input class="form-control" id="password" type="password" name="password" <?= $edit
+                                                        ? ""
+                                                        : "required" ?> minlength="6">
+                                                </div>
+                                            </div>
+                                            <div class="form-actions">
+                                                <button class="btn btn-primary">
+                                                    <i class="bi bi-check2-circle">
+                                                    </i>
+                                                    <?= $edit
+                                                        ? "Save User"
+                                                        : "Create User" ?>
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </section>

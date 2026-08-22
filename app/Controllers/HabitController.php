@@ -4,17 +4,209 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Core\Auth;use App\Core\Controller;use App\Core\Flash;use App\Models\Habit;use App\Models\HabitLog;
+use App\Core\Auth;
+use App\Core\Controller;
+use App\Core\Flash;
+use App\Models\Habit;
+use App\Models\HabitLog;
 
+/** Handles habit schedules, progress, and completion logs. */
 final class HabitController extends Controller
 {
-    public function __construct(private readonly Auth $auth,private readonly Habit $habits,private readonly HabitLog $logs){}
-    public function index():void{$user=$this->auth->requireLogin();$search=trim((string)($_GET['search']??''));$status=(string)($_GET['status']??'');if(!in_array($status,['','Active','Completed'],true))$status='';$week=[];for($i=6;$i>=0;$i--){$day=date('Y-m-d',strtotime('-'.$i.' days'));$week[$day]=0;}foreach($this->logs->weeklyCounts($user)as$d=>$c)if(isset($week[$d]))$week[$d]=$c;$this->view('habit/index',['pageTitle'=>'Habit Tracker','habits'=>$this->habits->list($user,$search,$status),'search'=>$search,'status'=>$status,'week'=>$week]);}
-    public function createForm():void{$this->auth->requireLogin();$this->view('habit/form',['pageTitle'=>'Add Habit','habit'=>null,'errors'=>[]]);}
-    public function store():void{$this->requirePost();$this->requireCsrf();$user=$this->auth->requireLogin();$v=$this->validate($_POST);if($v['errors']){$this->view('habit/form',['pageTitle'=>'Add Habit','habit'=>$_POST,'errors'=>$v['errors']]);return;}$this->habits->create($user,$v['data']);Flash::add('success','Habit added.');$this->redirect('habit');}
-    public function editForm():void{$user=$this->auth->requireLogin();$habit=$this->habits->findOwned((int)($_GET['id']??0),$user);if(!$habit){Flash::add('error','Habit not found.');$this->redirect('habit');}$this->view('habit/form',['pageTitle'=>'Edit Habit','habit'=>$habit,'errors'=>[]]);}
-    public function update():void{$this->requirePost();$this->requireCsrf();$user=$this->auth->requireLogin();$id=(int)($_POST['habit_id']??0);$v=$this->validate($_POST);if($v['errors']){$_POST['habit_id']=$id;$this->view('habit/form',['pageTitle'=>'Edit Habit','habit'=>$_POST,'errors'=>$v['errors']]);return;}$this->habits->update($id,$user,$v['data']);Flash::add('success','Habit updated.');$this->redirect('habit');}
-    public function delete():void{$this->requirePost();$this->requireCsrf();$user=$this->auth->requireLogin();$deleted=$this->habits->delete((int)($_POST['habit_id']??0),$user);Flash::add($deleted?'success':'error',$deleted?'Habit deleted.':'Habit not found.');$this->redirect('habit');}
-    public function checkIn():void{$this->requirePost();$this->requireCsrf();$user=$this->auth->requireLogin();$id=(int)($_POST['habit_id']??0);$habit=$this->habits->findOwned($id,$user);$allowed=['sleep_quality'=>['Poor','Fair','Good','Excellent'],'diet_adherence'=>['Poor','Fair','Good','Excellent'],'stress_level'=>['Low','Moderate','High','Severe']];if(!$habit){Flash::add('error','Habit not found.');$this->redirect('habit');}$d=['notes'=>mb_substr(trim((string)($_POST['notes']??'')),0,255)];foreach($allowed as$key=>$values){$d[$key]=(string)($_POST[$key]??'');if(!in_array($d[$key],$values,true)){Flash::add('error','Choose a valid daily check-in value.');$this->redirect('habit');}}$this->logs->save($id,$user,$d);$dates=$this->logs->latestDates($id,$user);$streak=(int)$habit['streak'];if(count($dates)===1)$streak=max(1,$streak);elseif(count($dates)===2){$streak=(strtotime($dates[0])-strtotime($dates[1]))===86400?$streak+1:($dates[0]===date('Y-m-d')&&$dates[1]===date('Y-m-d')?$streak:1);}$this->habits->updateStreak($id,$user,$streak);Flash::add('success','Daily check-in recorded.');$this->redirect('habit');}
-    private function validate(array $in):array{$d=['habit_name'=>trim((string)($in['habit_name']??'')),'frequency'=>(string)($in['frequency']??''),'status'=>(string)($in['status']??''),'schedule_time'=>trim((string)($in['schedule_time']??''))?:null,'schedule_day'=>($in['schedule_day']??'')===' '?null:(string)($in['schedule_day']??'')];$d['schedule_day']=$d['schedule_day']===''?null:(int)$d['schedule_day'];$e=[];if($d['habit_name']===''||mb_strlen($d['habit_name'])>255)$e[]='Habit name is required and must be 255 characters or fewer.';if(!in_array($d['frequency'],['Daily','Weekly','Monthly'],true))$e[]='Choose a valid frequency.';if(!in_array($d['status'],['Active','Completed'],true))$e[]='Choose a valid status.';if($d['schedule_time']!==null&&!preg_match('/^([01]\d|2[0-3]):[0-5]\d$/',$d['schedule_time']))$e[]='Choose a valid schedule time.';if($d['schedule_day']!==null&&($d['schedule_day']<0||$d['schedule_day']>6))$e[]='Choose a valid scheduled day.';return['data'=>$d,'errors'=>$e];}
+    public function __construct(
+        private readonly Auth $auth,
+        private readonly Habit $habits,
+        private readonly HabitLog $logs,
+    ) {
+    }
+    public function index(): void
+    {
+        $user = $this->auth->requireLogin();
+        $search = trim((string) ($_GET["search"] ?? ""));
+        $status = (string) ($_GET["status"] ?? "");
+        if (!in_array($status, ["", "Active", "Completed"], true)) {
+            $status = "";
+        }
+        $week = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $day = date("Y-m-d", strtotime("-" . $i . " days"));
+            $week[$day] = 0;
+        }
+        foreach ($this->logs->weeklyCounts($user) as $d => $c) {
+            if (isset($week[$d])) {
+                $week[$d] = $c;
+            }
+        }
+        $this->view("habit/index", [
+            "pageTitle" => "Habit Tracker",
+            "habits" => $this->habits->list($user, $search, $status),
+            "search" => $search,
+            "status" => $status,
+            "week" => $week,
+        ]);
+    }
+    public function createForm(): void
+    {
+        $this->auth->requireLogin();
+        $this->view("habit/form", [
+            "pageTitle" => "Add Habit",
+            "habit" => null,
+            "errors" => [],
+        ]);
+    }
+    public function store(): void
+    {
+        $this->requirePost();
+        $this->requireCsrf();
+        $user = $this->auth->requireLogin();
+        $v = $this->validate($_POST);
+        if ($v["errors"]) {
+            $this->view("habit/form", [
+                "pageTitle" => "Add Habit",
+                "habit" => $_POST,
+                "errors" => $v["errors"],
+            ]);
+            return;
+        }
+        $this->habits->create($user, $v["data"]);
+        Flash::add("success", "Habit added.");
+        $this->redirect("habit");
+    }
+    public function editForm(): void
+    {
+        $user = $this->auth->requireLogin();
+        $habit = $this->habits->findOwned((int) ($_GET["id"] ?? 0), $user);
+        if (!$habit) {
+            Flash::add("error", "Habit not found.");
+            $this->redirect("habit");
+        }
+        $this->view("habit/form", [
+            "pageTitle" => "Edit Habit",
+            "habit" => $habit,
+            "errors" => [],
+        ]);
+    }
+    public function update(): void
+    {
+        $this->requirePost();
+        $this->requireCsrf();
+        $user = $this->auth->requireLogin();
+        $id = (int) ($_POST["habit_id"] ?? 0);
+        $v = $this->validate($_POST);
+        if ($v["errors"]) {
+            $_POST["habit_id"] = $id;
+            $this->view("habit/form", [
+                "pageTitle" => "Edit Habit",
+                "habit" => $_POST,
+                "errors" => $v["errors"],
+            ]);
+            return;
+        }
+        $this->habits->update($id, $user, $v["data"]);
+        Flash::add("success", "Habit updated.");
+        $this->redirect("habit");
+    }
+    public function delete(): void
+    {
+        $this->requirePost();
+        $this->requireCsrf();
+        $user = $this->auth->requireLogin();
+        $deleted = $this->habits->delete(
+            (int) ($_POST["habit_id"] ?? 0),
+            $user,
+        );
+        Flash::add(
+            $deleted ? "success" : "error",
+            $deleted ? "Habit deleted." : "Habit not found.",
+        );
+        $this->redirect("habit");
+    }
+    public function checkIn(): void
+    {
+        $this->requirePost();
+        $this->requireCsrf();
+        $user = $this->auth->requireLogin();
+        $id = (int) ($_POST["habit_id"] ?? 0);
+        $habit = $this->habits->findOwned($id, $user);
+        $allowed = [
+            "sleep_quality" => ["Poor", "Fair", "Good", "Excellent"],
+            "diet_adherence" => ["Poor", "Fair", "Good", "Excellent"],
+            "stress_level" => ["Low", "Moderate", "High", "Severe"],
+        ];
+        if (!$habit) {
+            Flash::add("error", "Habit not found.");
+            $this->redirect("habit");
+        }
+        $d = [
+            "notes" => mb_substr(
+                trim((string) ($_POST["notes"] ?? "")),
+                0,
+                255,
+            ),
+        ];
+        foreach ($allowed as $key => $values) {
+            $d[$key] = (string) ($_POST[$key] ?? "");
+            if (!in_array($d[$key], $values, true)) {
+                Flash::add("error", "Choose a valid daily check-in value.");
+                $this->redirect("habit");
+            }
+        }
+        $this->logs->save($id, $user, $d);
+        $dates = $this->logs->latestDates($id, $user);
+        $streak = (int) $habit["streak"];
+        if (count($dates) === 1) {
+            $streak = max(1, $streak);
+        } elseif (count($dates) === 2) {
+            $streak =
+                strtotime($dates[0]) - strtotime($dates[1]) === 86400
+                    ? $streak + 1
+                    : ($dates[0] === date("Y-m-d") &&
+                    $dates[1] === date("Y-m-d")
+                        ? $streak
+                        : 1);
+        }
+        $this->habits->updateStreak($id, $user, $streak);
+        Flash::add("success", "Daily check-in recorded.");
+        $this->redirect("habit");
+    }
+    private function validate(array $in): array
+    {
+        $d = [
+            "habit_name" => trim((string) ($in["habit_name"] ?? "")),
+            "frequency" => (string) ($in["frequency"] ?? ""),
+            "status" => (string) ($in["status"] ?? ""),
+            "schedule_time" =>
+                trim((string) ($in["schedule_time"] ?? "")) ?: null,
+            "schedule_day" =>
+                ($in["schedule_day"] ?? "") === " "
+                    ? null
+                    : (string) ($in["schedule_day"] ?? ""),
+        ];
+        $d["schedule_day"] =
+            $d["schedule_day"] === "" ? null : (int) $d["schedule_day"];
+        $e = [];
+        if ($d["habit_name"] === "" || mb_strlen($d["habit_name"]) > 255) {
+            $e[] =
+                "Habit name is required and must be 255 characters or fewer.";
+        }
+        if (!in_array($d["frequency"], ["Daily", "Weekly", "Monthly"], true)) {
+            $e[] = "Choose a valid frequency.";
+        }
+        if (!in_array($d["status"], ["Active", "Completed"], true)) {
+            $e[] = "Choose a valid status.";
+        }
+        if (
+            $d["schedule_time"] !== null &&
+            !preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', $d["schedule_time"])
+        ) {
+            $e[] = "Choose a valid schedule time.";
+        }
+        if (
+            $d["schedule_day"] !== null &&
+            ($d["schedule_day"] < 0 || $d["schedule_day"] > 6)
+        ) {
+            $e[] = "Choose a valid scheduled day.";
+        }
+        return ["data" => $d, "errors" => $e];
+    }
 }
