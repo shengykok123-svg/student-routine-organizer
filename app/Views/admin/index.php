@@ -24,9 +24,13 @@ $tools = [
     </div>
 </section>
 
-<section class="admin-summary mb-4">
+<section class="admin-summary admin-overview-summary mb-4">
     <?php foreach ($stats as [$label, $value, $icon]): ?>
-        <article class="content-card admin-stat"><i class="bi <?= $icon ?> text-primary fs-5"></i><strong><?= (int) $value ?></strong><span><?= View::e($label) ?></span></article>
+        <article class="content-card admin-stat">
+            <i class="bi <?= $icon ?> text-primary admin-overview-icon"></i>
+            <strong><?= (int) $value ?></strong>
+            <span><?= View::e($label) ?></span>
+        </article>
     <?php endforeach; ?>
 </section>
 
