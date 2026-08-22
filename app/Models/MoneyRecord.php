@@ -70,6 +70,46 @@ final class MoneyRecord
         return $statement->fetchAll();
     }
 
+    /** Returns a grouped income, expense, and net cash-flow series for the active filter. */
+    public function cashFlowTrend(int $userId, array $filters): array
+    {
+        $start = new \DateTimeImmutable($filters["start"]);
+        $end = new \DateTimeImmutable($filters["end"]);
+        $days = $start->diff($end)->days;
+        $period = $days > 180
+            ? "DATE_FORMAT(transaction_date, '%Y-%m-01')"
+            : ($days > 35
+                ? "DATE_SUB(transaction_date, INTERVAL WEEKDAY(transaction_date) DAY)"
+                : "transaction_date");
+        [$where, $arguments] = $this->where($userId, $filters);
+        $statement = $this->pdo->prepare(
+            "SELECT {$period} AS period_date,
+                COALESCE(SUM(CASE WHEN transaction_type = 'Income' THEN amount ELSE 0 END), 0) AS income,
+                COALESCE(SUM(CASE WHEN transaction_type = 'Expense' THEN amount ELSE 0 END), 0) AS expense
+             FROM money_records{$where}
+             GROUP BY period_date
+             ORDER BY period_date",
+        );
+        $statement->execute($arguments);
+
+        $trend = ["labels" => [], "income" => [], "expense" => [], "net" => []];
+        foreach ($statement->fetchAll() as $row) {
+            $date = (string) $row["period_date"];
+            $income = (float) $row["income"];
+            $expense = (float) $row["expense"];
+            $trend["labels"][] = $days > 180
+                ? date("M Y", strtotime($date))
+                : ($days > 35
+                    ? "Week of " . date("d M", strtotime($date))
+                    : date("d M", strtotime($date)));
+            $trend["income"][] = $income;
+            $trend["expense"][] = $expense;
+            $trend["net"][] = $income - $expense;
+        }
+
+        return $trend;
+    }
+
     public function findOwned(int $id, int $userId): ?array
     {
         $statement = $this->pdo->prepare(

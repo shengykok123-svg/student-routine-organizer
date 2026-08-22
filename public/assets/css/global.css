@@ -855,6 +855,122 @@ textarea.form-control {
   background: #eee9ff;
   color: var(--sro-primary);
 }
+.money-budget-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f7f5ff 100%);
+}
+.budget-days {
+  color: var(--sro-muted);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+.money-budget-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+.money-budget-summary > div {
+  padding: 13px 15px;
+  border: 1px solid #e4e8f3;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.72);
+}
+.money-budget-summary span,
+.budget-progress-copy span {
+  display: block;
+  color: var(--sro-muted);
+  font-size: 0.78rem;
+}
+.money-budget-summary strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--sro-heading);
+  font-size: 1.05rem;
+}
+.budget-progress-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.budget-progress-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 12px;
+  padding: 13px 14px;
+  border: 1px solid #e4e8f3;
+  border-radius: 10px;
+  background: #fff;
+}
+.budget-progress-copy strong {
+  color: var(--sro-heading);
+}
+.budget-progress-track {
+  grid-column: 1 / -1;
+  height: 7px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #edf0f7;
+}
+.budget-progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--sro-success);
+}
+.budget-progress-item.is-warning .budget-progress-track span {
+  background: var(--sro-warning);
+}
+.budget-progress-item.is-over .budget-progress-track span {
+  background: var(--sro-danger);
+}
+.budget-progress-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--sro-muted);
+  font-size: 0.8rem;
+}
+.budget-form {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) minmax(170px, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+  padding-top: 18px;
+  border-top: 1px solid #e4e8f3;
+}
+.budget-form .form-label {
+  margin-bottom: 6px;
+}
+.money-quick-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.money-quick-filters button,
+.money-quick-filters a {
+  padding: 6px 11px;
+  border: 1px solid #dce2ef;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--sro-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.money-quick-filters button:hover,
+.money-quick-filters button.is-active {
+  border-color: var(--sro-primary);
+  background: #eee9ff;
+  color: var(--sro-primary);
+}
+.money-cashflow-area {
+  position: relative;
+  height: 300px;
+  margin-top: 12px;
+}
 /* Habit, Admin, Auth */
 .chart-card {
   padding: 21px;
@@ -1451,5 +1567,18 @@ textarea.form-control {
   }
   .landing-features {
     padding: 50px 0;
+  }
+}
+@media (max-width: 767px) {
+  .money-budget-summary,
+  .budget-progress-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .budget-form {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+  .money-cashflow-area {
+    height: 250px;
   }
 }

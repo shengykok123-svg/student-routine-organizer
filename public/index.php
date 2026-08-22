@@ -53,6 +53,7 @@ $habitController = new HabitController(
 $moneyController = new MoneyController(
     $auth,
     new \App\Models\MoneyRecord($pdo),
+    new \App\Models\MoneyBudget($pdo),
     new \App\Services\MoneyReceiptUploadService(),
 );
 $accountController = new AccountController(
@@ -129,6 +130,8 @@ $router->post("money/store", [$moneyController, "store"]);
 $router->get("money/edit", [$moneyController, "editForm"]);
 $router->post("money/update", [$moneyController, "update"]);
 $router->post("money/delete", [$moneyController, "delete"]);
+$router->post("money/budget/save", [$moneyController, "saveBudget"]);
+$router->post("money/budget/delete", [$moneyController, "deleteBudget"]);
 
 $path = parse_url($_SERVER["REQUEST_URI"] ?? "/", PHP_URL_PATH) ?: "/";
 $baseUrl = \App\Config\App::baseUrl();
