@@ -68,13 +68,16 @@ $remainingBudgetLabel = $budgetOverview["remaining"] < 0 ? "Over budget" : "Rema
     <?php endforeach; ?>
 </section>
 
-<section class="content-card money-budget-card mb-3">
+<section class="content-card money-budget-card money-budget-compact mb-3">
     <div class="card-section-heading">
         <div>
             <p class="card-kicker">Current month plan · <?= View::e($budgetOverview["month_label"]) ?></p>
             <h2>Budget & Safe to Spend</h2>
         </div>
-        <span class="budget-days"><i class="bi bi-calendar3"></i> <?= (int) $budgetOverview["days_remaining"] ?> days remaining</span>
+        <div class="d-flex align-items-center gap-3">
+            <span class="budget-days"><i class="bi bi-calendar3"></i> <?= (int) $budgetOverview["days_remaining"] ?> days remaining</span>
+            <button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#budgetModal"><i class="bi bi-sliders"></i> Manage budget</button>
+        </div>
     </div>
 
     <div class="money-budget-summary">
@@ -83,54 +86,63 @@ $remainingBudgetLabel = $budgetOverview["remaining"] < 0 ? "Over budget" : "Rema
         <div><span><?= View::e($remainingBudgetLabel) ?></span><strong class="<?= $budgetOverview["remaining"] < 0 ? "text-danger" : "text-success" ?>">RM <?= number_format((float) abs($budgetOverview["remaining"]), 2) ?></strong></div>
         <div><span>Safe to spend today</span><strong>RM <?= number_format((float) $budgetOverview["safe_daily"], 2) ?></strong></div>
     </div>
+</section>
 
-    <?php if ($budgetOverview["items"]): ?>
-        <div class="budget-progress-list">
-            <?php foreach ($budgetOverview["items"] as $budget): ?>
-                <?php $budgetState = $budget["percentage"] >= 100 ? "is-over" : ($budget["percentage"] >= 80 ? "is-warning" : "is-healthy"); ?>
-                <article class="budget-progress-item <?= $budgetState ?>">
-                    <div class="budget-progress-copy">
-                        <strong><?= View::e($budget["category"]) ?></strong>
-                        <span>RM <?= number_format((float) $budget["spent"], 2) ?> of RM <?= number_format((float) $budget["limit"], 2) ?></span>
+<div class="modal fade" id="budgetModal" tabindex="-1" aria-labelledby="budgetModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <p class="card-kicker mb-1">Current month plan · <?= View::e($budgetOverview["month_label"]) ?></p>
+                    <h2 class="h4 mb-0" id="budgetModalTitle">Manage Monthly Budgets</h2>
+                </div>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <?php if ($budgetOverview["items"]): ?>
+                    <div class="budget-progress-list">
+                        <?php foreach ($budgetOverview["items"] as $budget): ?>
+                            <?php $budgetState = $budget["percentage"] >= 100 ? "is-over" : ($budget["percentage"] >= 80 ? "is-warning" : "is-healthy"); ?>
+                            <article class="budget-progress-item <?= $budgetState ?>">
+                                <div class="budget-progress-copy">
+                                    <strong><?= View::e($budget["category"]) ?></strong>
+                                    <span>RM <?= number_format((float) $budget["spent"], 2) ?> of RM <?= number_format((float) $budget["limit"], 2) ?></span>
+                                </div>
+                                <div class="budget-progress-track" aria-label="<?= View::e($budget["category"]) ?> budget progress"><span style="width: <?= min(100, max(0, (float) $budget["percentage"])) ?>%"></span></div>
+                                <div class="budget-progress-meta">
+                                    <span><?= number_format((float) $budget["percentage"], 0) ?>%</span>
+                                    <form method="post" action="<?= View::e($baseUrl) ?>/money/budget/delete" onsubmit="return confirm('Remove this monthly budget?')">
+                                        <input type="hidden" name="_csrf" value="<?= View::e(Csrf::token()) ?>">
+                                        <input type="hidden" name="category" value="<?= View::e($budget["category"]) ?>">
+                                        <button class="btn btn-link btn-sm text-danger p-0" type="submit">Remove</button>
+                                    </form>
+                                </div>
+                            </article>
+                        <?php endforeach; ?>
                     </div>
-                    <div class="budget-progress-track" aria-label="<?= View::e($budget["category"]) ?> budget progress">
-                        <span style="width: <?= min(100, max(0, (float) $budget["percentage"])) ?>%"></span>
+                <?php else: ?>
+                    <p class="text-muted">Set an expense budget to see progress and a daily spending guide.</p>
+                <?php endif; ?>
+                <form class="budget-form" method="post" action="<?= View::e($baseUrl) ?>/money/budget/save">
+                    <input type="hidden" name="_csrf" value="<?= View::e(Csrf::token()) ?>">
+                    <div>
+                        <label class="form-label" for="budget-category">Expense category</label>
+                        <select class="form-select" id="budget-category" name="category">
+                            <?php foreach ($expenseCategories as $expenseCategory): ?>
+                                <option value="<?= View::e($expenseCategory) ?>"><?= View::e($expenseCategory) ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
-                    <div class="budget-progress-meta">
-                        <span><?= number_format((float) $budget["percentage"], 0) ?>%</span>
-                        <form method="post" action="<?= View::e($baseUrl) ?>/money/budget/delete" onsubmit="return confirm('Remove this monthly budget?')">
-                            <input type="hidden" name="_csrf" value="<?= View::e(Csrf::token()) ?>">
-                            <input type="hidden" name="category" value="<?= View::e($budget["category"]) ?>">
-                            <button class="btn btn-link btn-sm text-danger p-0" type="submit">Remove</button>
-                        </form>
+                    <div>
+                        <label class="form-label" for="monthly-limit">Monthly limit</label>
+                        <div class="input-group"><span class="input-group-text">RM</span><input class="form-control" id="monthly-limit" type="number" min="0.01" max="99999999" step="0.01" name="monthly_limit" placeholder="e.g. 250.00" required></div>
                     </div>
-                </article>
-            <?php endforeach; ?>
-        </div>
-    <?php else: ?>
-        <p class="text-muted mb-0">Set an expense budget to see progress and a daily spending guide.</p>
-    <?php endif; ?>
-
-    <form class="budget-form" method="post" action="<?= View::e($baseUrl) ?>/money/budget/save">
-        <input type="hidden" name="_csrf" value="<?= View::e(Csrf::token()) ?>">
-        <div>
-            <label class="form-label" for="budget-category">Expense category</label>
-            <select class="form-select" id="budget-category" name="category">
-                <?php foreach ($expenseCategories as $expenseCategory): ?>
-                    <option value="<?= View::e($expenseCategory) ?>"><?= View::e($expenseCategory) ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <div>
-            <label class="form-label" for="monthly-limit">Monthly limit</label>
-            <div class="input-group">
-                <span class="input-group-text">RM</span>
-                <input class="form-control" id="monthly-limit" type="number" min="0.01" max="99999999" step="0.01" name="monthly_limit" placeholder="e.g. 250.00" required>
+                    <button class="btn btn-primary" type="submit"><i class="bi bi-piggy-bank"></i> Save Budget</button>
+                </form>
             </div>
         </div>
-        <button class="btn btn-outline-primary" type="submit"><i class="bi bi-piggy-bank"></i> Save Budget</button>
-    </form>
-</section>
+    </div>
+</div>
 
 <section class="filter-panel mb-3">
     <div class="money-quick-filters" aria-label="Quick transaction filters">

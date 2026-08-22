@@ -858,6 +858,21 @@ textarea.form-control {
 .money-budget-card {
   background: linear-gradient(135deg, #ffffff 0%, #f7f5ff 100%);
 }
+.money-budget-compact {
+  padding: 17px 20px;
+}
+.money-budget-compact .card-section-heading {
+  margin-bottom: 14px;
+}
+.money-budget-compact .money-budget-summary {
+  margin: 0;
+}
+.money-budget-compact .money-budget-summary > div {
+  padding: 10px 13px;
+}
+.money-budget-compact .money-budget-summary strong {
+  font-size: 1rem;
+}
 .budget-days {
   color: var(--sro-muted);
   font-size: 0.85rem;
@@ -1580,5 +1595,12 @@ textarea.form-control {
   }
   .money-cashflow-area {
     height: 250px;
+  }
+  .money-budget-compact .card-section-heading {
+    align-items: flex-start;
+  }
+  .money-budget-compact .card-section-heading > div:last-child {
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
 }
