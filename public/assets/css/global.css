@@ -206,8 +206,30 @@ h2 {
   flex: 1;
 }
 .topbar-bell {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: #66728a;
   font-size: 1.15rem;
+  min-width: 32px;
+  min-height: 32px;
+}
+.notification-count {
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  background: #e84a5f;
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 800;
+  line-height: 14px;
+  text-align: center;
 }
 .user-summary {
   display: flex;
@@ -1082,7 +1104,7 @@ textarea.form-control {
     gap: 13px;
   }
   .topbar-bell {
-    display: none;
+    font-size: 1rem;
   }
   .user-summary small {
     text-align: left;

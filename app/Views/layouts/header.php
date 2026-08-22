@@ -21,6 +21,8 @@ $activeModule = match (true) {
     default => "dashboard",
 };
 $imageBase = View::e($baseUrl) . "/assets/images";
+$unreadNotificationCount = max(0, (int) ($unreadNotificationCount ?? 0));
+$notificationBadge = $unreadNotificationCount > 99 ? "99+" : (string) $unreadNotificationCount;
 $navigation = [
     [
         "key" => "dashboard",
@@ -175,9 +177,12 @@ $navigation = [
                                                 </div>
                                                 <a class="topbar-bell" href="<?= View::e(
                                                     $baseUrl,
-                                                ) ?>/notifications" aria-label="Notifications">
+                                                ) ?>/notifications" aria-label="Notifications<?= $unreadNotificationCount ? ": " . $notificationBadge . " unread" : "" ?>">
                                                     <i class="bi bi-bell">
                                                     </i>
+                                                    <?php if ($unreadNotificationCount > 0): ?>
+                                                        <span class="notification-count" aria-hidden="true"><?= View::e($notificationBadge) ?></span>
+                                                    <?php endif; ?>
                                                 </a>
                                                 <div class="user-summary">
                                                     <div>

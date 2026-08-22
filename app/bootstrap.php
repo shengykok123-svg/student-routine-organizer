@@ -6,6 +6,7 @@ use App\Config\App;
 use App\Config\Database;
 use App\Core\Auth;
 use App\Core\Session;
+use App\Models\Notification;
 use App\Models\User;
 use App\Services\RememberMeService;
 
@@ -28,9 +29,11 @@ error_reporting(E_ALL);
 Session::start();
 $pdo = Database::connection();
 $users = new User($pdo);
+$notifications = new Notification($pdo);
 $auth = new Auth($users);
 $rememberMe = new RememberMeService();
 $GLOBALS["sro_auth"] = $auth;
+$GLOBALS["sro_notifications"] = $notifications;
 
 if (!$auth->check()) {
     $rememberedId = $rememberMe->userIdFromCookie();
