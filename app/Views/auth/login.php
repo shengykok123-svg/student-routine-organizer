@@ -3,6 +3,9 @@ use App\Core\View;
 
 $assetBase = View::e($baseUrl) . "/assets/images";
 ?>
+<div class="auth-theme-control">
+    <?php $themeToggleClass = "auth-theme-toggle"; require __DIR__ . "/../partials/theme_toggle.php"; ?>
+</div>
 <section class="auth-wrap">
     <div class="auth-card-shell auth-login-card">
         <aside class="auth-visual">
