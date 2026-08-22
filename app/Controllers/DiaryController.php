@@ -233,7 +233,7 @@ final class DiaryController extends Controller
         if (
             !$date ||
             $date->format("Y-m-d") !== $d["entry_date"] ||
-            $date > new\DateTimeImmutable("today")
+            $date > new \DateTimeImmutable("today")
         ) {
             $e[] = "Choose a valid date that is not in the future.";
         }
