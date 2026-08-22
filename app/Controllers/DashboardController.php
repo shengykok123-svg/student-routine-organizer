@@ -19,6 +19,10 @@ final class DashboardController extends Controller
     public function index(): void
     {
         $id = $this->auth->requireLogin();
+        if ($this->auth->role() === "Admin") {
+            $this->redirect("admin");
+        }
+
         $range = (string) ($_GET["range"] ?? "month");
         if (!in_array($range, ["month", "quarter", "all", "custom"], true)) {
             $range = "month";
