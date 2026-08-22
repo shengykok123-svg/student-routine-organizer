@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core;
 
 use App\Config\App;
+use App\Models\Notification;
 
 /** Renders view templates with escaped data. */
 final class View
@@ -21,6 +22,16 @@ final class View
         $data["appName"] = App::NAME;
         $data["flashes"] = Flash::consume();
         $data["auth"] = $GLOBALS["sro_auth"] ?? null;
+        $data["unreadNotificationCount"] = 0;
+        if (
+            $data["auth"] instanceof Auth &&
+            $data["auth"]->check() &&
+            ($GLOBALS["sro_notifications"] ?? null) instanceof Notification
+        ) {
+            $data["unreadNotificationCount"] = ($GLOBALS[
+                "sro_notifications"
+            ])->unreadCount((int) $data["auth"]->id());
+        }
         extract($data, EXTR_SKIP);
         require dirname(__DIR__) . "/Views/layouts/header.php";
         require $file;

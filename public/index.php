@@ -16,7 +16,7 @@ use App\Controllers\NotificationController;
 use App\Core\Router;
 
 $router = new Router();
-$notifications = new \App\Models\Notification($pdo);
+$notifications = $GLOBALS["sro_notifications"];
 $authController = new AuthController(
     $users,
     $auth,

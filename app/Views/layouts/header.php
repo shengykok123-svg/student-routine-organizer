@@ -14,6 +14,8 @@ $activeModule = match (true) {
     str_starts_with($relativePath, 'settings') => 'settings', default => 'dashboard',
 };
 $imageBase = View::e($baseUrl) . '/assets/images';
+$unreadNotificationCount = max(0, (int) ($unreadNotificationCount ?? 0));
+$notificationBadge = $unreadNotificationCount > 99 ? '99+' : (string) $unreadNotificationCount;
 $navigation = [
     ['key' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'sidebar-dashboard-default.png'],
     ['key' => 'exercise', 'label' => 'Exercise Tracker', 'icon' => 'sidebar-exercise-default.png', 'activeIcon' => 'sidebar-exercise-active.png'],
@@ -55,7 +57,7 @@ $navigation = [
         <form class="sidebar-logout" method="post" action="<?= View::e($baseUrl) ?>/logout"><input type="hidden" name="_csrf" value="<?= View::e(Csrf::token()) ?>"><button type="submit"><img class="sidebar-icon" src="<?= $imageBase ?>/sidebar/sidebar-logout-default.png" alt=""><span>Logout</span></button></form>
     </aside>
     <div class="app-main">
-        <header class="app-topbar"><button class="btn menu-toggle d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNavigation" aria-label="Open navigation"><i class="bi bi-list"></i></button><div class="topbar-spacer"></div><a class="topbar-bell" href="<?= View::e($baseUrl) ?>/notifications" aria-label="Notifications"><i class="bi bi-bell"></i></a><div class="user-summary"><div><strong>Hello, <?= View::e($auth->username()) ?></strong><small><?= View::e($auth->role()) ?></small></div><?php if ($auth->profileImagePath()): ?><img class="user-avatar user-avatar-image" src="<?= View::e($baseUrl) ?>/profile/photo" alt="Profile picture"><?php else: ?><span class="user-avatar"><?= View::e(strtoupper(substr($auth->username(), 0, 1))) ?></span><?php endif; ?></div></header>
+        <header class="app-topbar"><button class="btn menu-toggle d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNavigation" aria-label="Open navigation"><i class="bi bi-list"></i></button><div class="topbar-spacer"></div><a class="topbar-bell" href="<?= View::e($baseUrl) ?>/notifications" aria-label="Notifications<?= $unreadNotificationCount ? ': ' . View::e($notificationBadge) . ' unread' : '' ?>"><i class="bi bi-bell"></i><?php if ($unreadNotificationCount > 0): ?><span class="notification-count" aria-hidden="true"><?= View::e($notificationBadge) ?></span><?php endif; ?></a><div class="user-summary"><div><strong>Hello, <?= View::e($auth->username()) ?></strong><small><?= View::e($auth->role()) ?></small></div><?php if ($auth->profileImagePath()): ?><img class="user-avatar user-avatar-image" src="<?= View::e($baseUrl) ?>/profile/photo" alt="Profile picture"><?php else: ?><span class="user-avatar"><?= View::e(strtoupper(substr($auth->username(), 0, 1))) ?></span><?php endif; ?></div></header>
         <main class="app-content">
 <?php else: ?>
 <main class="auth-main <?= ($pageTitle ?? '') === 'Welcome' ? 'landing-main' : '' ?>">
