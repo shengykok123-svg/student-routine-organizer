@@ -68,7 +68,7 @@ if (isset($duplicateToken)): ?>
                                 <?php endforeach; ?>
                                 </select>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6<?= $selectedActivity === "Others" ? "" : " d-none" ?>" id="custom-activity-field">
                                 <label class="form-label" for="other_activity_type">Custom activity <span class="text-muted">(if Others)</span>
                                 </label>
                                 <input class="form-control" id="other_activity_type" name="other_activity_type" value="<?= View::e(
@@ -116,3 +116,22 @@ if (isset($duplicateToken)): ?>
                                 </div>
                             </form>
                         </section>
+                        <script>
+                            (() => {
+                                const activitySelect = document.getElementById("activity_type");
+                                const customField = document.getElementById("custom-activity-field");
+                                const customInput = document.getElementById("other_activity_type");
+
+                                if (!activitySelect || !customField || !customInput) return;
+
+                                const updateCustomActivityField = () => {
+                                    const isCustomActivity = activitySelect.value === "Others";
+                                    customField.classList.toggle("d-none", !isCustomActivity);
+                                    customInput.disabled = !isCustomActivity;
+                                    customInput.required = isCustomActivity;
+                                };
+
+                                activitySelect.addEventListener("change", updateCustomActivityField);
+                                updateCustomActivityField();
+                            })();
+                        </script>
