@@ -35,7 +35,8 @@ html[data-theme="dark"] {
   --sro-shadow: 0 10px 28px rgba(0, 0, 0, 0.27);
 }
 html[data-theme="dark"] .auth-body {
-  background: radial-gradient(circle at 20% 5%, #282151 0%, transparent 30%), #111624;
+  background:
+    radial-gradient(circle at 20% 5%, #282151 0%, transparent 30%), #111624;
 }
 html[data-theme="dark"] .app-topbar,
 html[data-theme="dark"] .stat-card,
@@ -276,6 +277,73 @@ h2 {
 }
 .theme-switcher-button i {
   margin: 0;
+}
+.theme-toggle {
+  width: 48px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.theme-toggle-track {
+  position: relative;
+  display: block;
+  width: 48px;
+  height: 28px;
+  overflow: hidden;
+  border: 1px solid var(--sro-border);
+  border-radius: 999px;
+  background: #e8e1ff;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+.theme-toggle-icon {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  font-size: 0.68rem;
+  line-height: 1;
+  transform: translateY(-50%);
+  transition: opacity 0.2s ease;
+}
+.theme-toggle-icon-sun {
+  right: 7px;
+  color: #f1a521;
+  opacity: 1;
+}
+.theme-toggle-icon-moon {
+  left: 7px;
+  color: #c9c0ff;
+  opacity: 0.35;
+}
+.theme-toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  z-index: 2;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(43, 32, 105, 0.22);
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+html[data-theme="dark"] .theme-toggle-track {
+  border-color: #4c4583;
+  background: #2f2860;
+}
+html[data-theme="dark"] .theme-toggle-thumb {
+  background: #b9adff;
+  transform: translateX(20px);
+}
+html[data-theme="dark"] .theme-toggle-icon-sun {
+  opacity: 0.35;
+}
+html[data-theme="dark"] .theme-toggle-icon-moon {
+  opacity: 1;
 }
 .theme-switcher .dropdown-menu {
   min-width: 142px;

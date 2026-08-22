@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const root = document.documentElement;
   const body = document.body;
   const choices = document.querySelectorAll("[data-theme-choice]");
+  const themeToggle = document.querySelector("[data-theme-toggle]");
 
   const resolvedTheme = (preference) =>
     preference === "system"
@@ -11,10 +12,35 @@ document.addEventListener("DOMContentLoaded", () => {
         : "light"
       : preference;
 
+  const savePreference = (preference) => {
+    if (!body.dataset.themeEndpoint) return;
+
+    fetch(body.dataset.themeEndpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        _csrf: body.dataset.themeCsrf || "",
+        theme: preference,
+      }),
+    }).catch(() => undefined);
+  };
+
+  const updateThemeToggle = () => {
+    if (!themeToggle) return;
+
+    const isDark = root.dataset.theme === "dark";
+    themeToggle.setAttribute("aria-pressed", String(isDark));
+    themeToggle.setAttribute(
+      "aria-label",
+      isDark ? "Switch to light theme" : "Switch to dark theme",
+    );
+  };
+
   const applyTheme = (preference) => {
     root.dataset.themePreference = preference;
     root.dataset.theme = resolvedTheme(preference);
     localStorage.setItem("sro-theme-preference", preference);
+    updateThemeToggle();
     document.dispatchEvent(new CustomEvent("sro:themechange"));
   };
 
@@ -23,19 +49,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const preference = choice.dataset.themeChoice;
       if (!preference) return;
       applyTheme(preference);
-
-      if (body.dataset.themeEndpoint) {
-        fetch(body.dataset.themeEndpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({
-            _csrf: body.dataset.themeCsrf || "",
-            theme: preference,
-          }),
-        }).catch(() => undefined);
-      }
+      savePreference(preference);
     });
   });
+
+  themeToggle?.addEventListener("click", () => {
+    const preference = root.dataset.theme === "dark" ? "light" : "dark";
+    applyTheme(preference);
+    savePreference(preference);
+  });
+
+  updateThemeToggle();
 
   window
     .matchMedia("(prefers-color-scheme: dark)")
