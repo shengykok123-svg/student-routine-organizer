@@ -6,7 +6,7 @@ $activityIcons = [
     "Badminton" => "badminton-racket",
     "Walking" => "bi-person-walking",
     "Cycling" => "bi-bicycle",
-    "Gym" => "bi-heart-pulse",
+    "Gym" => "gym-dumbbell",
     "Swimming" => "bi-water",
 ];
 
@@ -135,6 +135,11 @@ $activityIcons = [
                                                                                                     <svg viewBox="0 0 24 24" width="18" height="18" role="img" aria-label="Badminton racket" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                                                                                         <ellipse cx="9" cy="8.5" rx="4.5" ry="6" transform="rotate(-35 9 8.5)"></ellipse>
                                                                                                         <path d="M12.4 13.2 18.5 19.3M17.2 18l1.8 1.8M18.6 19.4l1.2-1.2"></path>
+                                                                                                    </svg>
+                                                                                                <?php elseif ($activityIcon === "gym-dumbbell"): ?>
+                                                                                                    <svg viewBox="0 0 24 24" width="18" height="18" role="img" aria-label="Dumbbell" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                                                        <path d="m7 8-2 2m0 4 2 2m10-8 2 2m0 4-2 2M7 12h10"></path>
+                                                                                                        <path d="M3.5 7.5v9M6 6v12M18 6v12M20.5 7.5v9"></path>
                                                                                                     </svg>
                                                                                                 <?php else: ?>
                                                                                                     <i class="bi <?= View::e($activityIcon) ?>" aria-hidden="true"></i>
