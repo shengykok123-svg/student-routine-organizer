@@ -24,13 +24,13 @@ final class AuthController extends Controller
     public function home(): void
     {
         $this->auth->check()
-            ? $this->redirect("dashboard")
+            ? $this->redirect($this->authenticatedHome())
             : $this->view("auth/home", ["pageTitle" => "Welcome"]);
     }
     public function loginForm(): void
     {
         if ($this->auth->check()) {
-            $this->redirect("dashboard");
+            $this->redirect($this->authenticatedHome());
         }
         $this->view("auth/login", ["pageTitle" => "Sign in"]);
     }
@@ -52,7 +52,7 @@ final class AuthController extends Controller
         isset($_POST["remember"])
             ? $this->rememberMe->issue((int) $user["user_id"])
             : $this->rememberMe->clear();
-        $this->redirect("dashboard");
+        $this->redirect($user["role"] === "Admin" ? "admin" : "dashboard");
     }
     public function registerForm(): void
     {
@@ -125,5 +125,11 @@ final class AuthController extends Controller
         \App\Core\Session::start();
         Flash::add("success", "You have been logged out.");
         $this->redirect("");
+    }
+
+    /** Routes each signed-in role to its appropriate landing page. */
+    private function authenticatedHome(): string
+    {
+        return $this->auth->role() === "Admin" ? "admin" : "dashboard";
     }
 }
