@@ -2,11 +2,11 @@
 use App\Services\ExerciseValidationService;
 
 $activityIcons = [
-    "Jogging" => "bi-person-running",
-    "Badminton" => "bi-trophy",
+    "Jogging" => "bi-lightning-charge",
+    "Badminton" => "badminton-racket",
     "Walking" => "bi-person-walking",
     "Cycling" => "bi-bicycle",
-    "Gym" => "bi-dumbbell",
+    "Gym" => "bi-heart-pulse",
     "Swimming" => "bi-water",
 ];
 
@@ -131,8 +131,14 @@ $activityIcons = [
                                                                                         <div class="d-flex align-items-center gap-2">
                                                                                             <?php $activityIcon = $activityIcons[$record["activity_type"]] ?? "bi-activity"; ?>
                                                                                             <span class="activity-badge" title="<?= View::e($record["activity_type"]) ?>">
-                                                                                                <i class="bi <?= View::e($activityIcon) ?>" aria-hidden="true">
-                                                                                                </i>
+                                                                                                <?php if ($activityIcon === "badminton-racket"): ?>
+                                                                                                    <svg viewBox="0 0 24 24" width="18" height="18" role="img" aria-label="Badminton racket" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                                                                                        <ellipse cx="9" cy="8.5" rx="4.5" ry="6" transform="rotate(-35 9 8.5)"></ellipse>
+                                                                                                        <path d="M12.4 13.2 18.5 19.3M17.2 18l1.8 1.8M18.6 19.4l1.2-1.2"></path>
+                                                                                                    </svg>
+                                                                                                <?php else: ?>
+                                                                                                    <i class="bi <?= View::e($activityIcon) ?>" aria-hidden="true"></i>
+                                                                                                <?php endif; ?>
                                                                                             </span>
                                                                                             <strong>
                                                                                                 <?= View::e(
