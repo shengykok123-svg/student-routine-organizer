@@ -24,7 +24,14 @@ $authController = new AuthController(
     $notifications,
 );
 $dashboardController = new DashboardController($auth, $pdo);
-$adminController = new AdminController($auth, $users, $pdo);
+$adminController = new AdminController(
+    $auth,
+    $users,
+    $pdo,
+    new \App\Models\AdminAuditLog($pdo),
+    new \App\Models\Announcement($pdo),
+    new \App\Services\AdminMaintenanceService($pdo),
+);
 $exerciseController = new ExerciseController(
     $auth,
     new \App\Models\Exercise($pdo),
@@ -69,6 +76,14 @@ $router->post("admin/users/store", [$adminController, "store"]);
 $router->get("admin/users/edit", [$adminController, "editForm"]);
 $router->post("admin/users/update", [$adminController, "update"]);
 $router->post("admin/users/delete", [$adminController, "delete"]);
+$router->post("admin/users/suspend", [$adminController, "suspend"]);
+$router->post("admin/users/resume", [$adminController, "resume"]);
+$router->get("admin/announcements", [$adminController, "announcements"]);
+$router->post("admin/announcements", [$adminController, "storeAnnouncement"]);
+$router->get("admin/audit", [$adminController, "audit"]);
+$router->get("admin/maintenance", [$adminController, "maintenance"]);
+$router->get("admin/maintenance/export", [$adminController, "exportSummary"]);
+$router->post("admin/maintenance/clean-uploads", [$adminController, "cleanUploads"]);
 $router->get("profile", [$accountController, "profile"]);
 $router->post("profile", [$accountController, "updateProfile"]);
 $router->get("profile/photo", [$accountController, "profileImage"]);

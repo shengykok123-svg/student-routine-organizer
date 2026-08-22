@@ -63,6 +63,13 @@ final class Auth
             header("Location: " . App::url("login"), true, 303);
             exit();
         }
+        $user = $this->users->findById($id);
+        if ($user === null || ($user["account_status"] ?? "Active") !== "Active") {
+            $this->logout();
+            Flash::add("error", "Your account is currently unavailable.");
+            header("Location: " . App::url("login"), true, 303);
+            exit();
+        }
         return $id;
     }
 

@@ -25,7 +25,7 @@ final class User
     private function find(string $where, array $values): ?array
     {
         $statement = $this->pdo->prepare(
-            "SELECT user_id, username, email, full_name, profile_image_path, password, role, terms_accepted_at, created_at FROM users WHERE " .
+            "SELECT user_id, username, email, full_name, profile_image_path, password, role, account_status, terms_accepted_at, created_at FROM users WHERE " .
                 $where,
         );
         $statement->execute($values);
@@ -103,6 +103,20 @@ final class User
         $statement->execute([$role, $id]);
         return true;
     }
+
+    public function setAccountStatus(int $id, string $status): void
+    {
+        $this->pdo
+            ->prepare("UPDATE users SET account_status = ? WHERE user_id = ?")
+            ->execute([$status, $id]);
+    }
+
+    public function countAdmins(): int
+    {
+        return (int) $this->pdo
+            ->query("SELECT COUNT(*) FROM users WHERE role = 'Admin' AND account_status = 'Active'")
+            ->fetchColumn();
+    }
     public function updatePassword(int $id, string $password): void
     {
         $this->pdo
@@ -115,12 +129,30 @@ final class User
         $statement->execute([$id]);
         return $statement->rowCount() === 1;
     }
-    public function all(): array
+    public function all(string $search = "", string $role = "", string $status = ""): array
     {
-        return $this->pdo
-            ->query(
-                "SELECT user_id, username, email, full_name, role, created_at FROM users ORDER BY user_id DESC",
-            )
-            ->fetchAll();
+        $where = [];
+        $values = [];
+        if ($search !== "") {
+            $where[] = "(username LIKE ? OR email LIKE ? OR full_name LIKE ?)";
+            $term = "%{$search}%";
+            $values = [$term, $term, $term];
+        }
+        if (in_array($role, ["Student", "Admin"], true)) {
+            $where[] = "role = ?";
+            $values[] = $role;
+        }
+        if (in_array($status, ["Active", "Suspended"], true)) {
+            $where[] = "account_status = ?";
+            $values[] = $status;
+        }
+        $sql = "SELECT user_id, username, email, full_name, role, account_status, created_at FROM users";
+        if ($where) {
+            $sql .= " WHERE " . implode(" AND ", $where);
+        }
+        $sql .= " ORDER BY user_id DESC";
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute($values);
+        return $statement->fetchAll();
     }
 }
