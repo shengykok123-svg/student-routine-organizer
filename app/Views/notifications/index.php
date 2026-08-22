@@ -8,6 +8,10 @@ use App\Core\View;
             <h1>Notifications</h1>
                 <p class="page-subtitle">Your latest local account and routine updates.</p>
                 </div>
+    <div class="page-heading-actions">
+        <a class="btn btn-outline-secondary" href="<?= View::e($baseUrl) ?>/<?= View::e($dashboardPath) ?>">
+            <i class="bi bi-grid-1x2"></i> Back to Dashboard
+        </a>
                 <?php if ($notifications): ?>
                 <form method="post" action="<?= View::e(
                     $baseUrl,
@@ -21,6 +25,7 @@ use App\Core\View;
                         </i> Mark all read</button>
                     </form>
                     <?php endif; ?>
+    </div>
                 </section>
                 <section class="content-card p-0 overflow-hidden">
                     <?php if ($notifications): ?>

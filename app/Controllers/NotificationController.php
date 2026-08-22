@@ -23,6 +23,8 @@ final class NotificationController extends Controller
         $this->view("notifications/index", [
             "pageTitle" => "Notifications",
             "notifications" => $this->notifications->list($id),
+            "dashboardPath" =>
+                $this->auth->role() === "Admin" ? "admin/dashboard" : "dashboard",
         ]);
     }
     public function read(): void

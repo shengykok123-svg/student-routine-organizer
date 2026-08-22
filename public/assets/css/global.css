@@ -469,6 +469,12 @@ html[data-theme="dark"] .theme-toggle-icon-moon {
   gap: 20px;
   margin-bottom: 24px;
 }
+.page-heading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
 .content-card,
 .filter-panel,
 .form-panel,
@@ -1383,6 +1389,16 @@ textarea.form-control {
   }
   .page-heading > .btn,
   .page-heading > div:last-child {
+    width: 100%;
+  }
+  .page-heading-actions {
+    justify-content: stretch;
+  }
+  .page-heading-actions .btn,
+  .page-heading-actions form {
+    flex: 1 1 180px;
+  }
+  .page-heading-actions form .btn {
     width: 100%;
   }
   .stats-grid,
