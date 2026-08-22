@@ -204,13 +204,13 @@ final class ExerciseController extends Controller
         try {
             $file = $this->files->upload($_FILES["evidence"] ?? []);
             if ($file === null) {
-                throw new \RuntimeException("Choose evidence to upload.");
+                throw new \RuntimeException("Choose a file to upload.");
             }
             $old = $this->attachments->save($id, $user, $file);
             if ($old) {
                 $this->files->remove($old["stored_name"]);
             }
-            Flash::add("success", "Evidence uploaded.");
+            Flash::add("success", "File uploaded.");
         } catch (\RuntimeException $e) {
             Flash::add("error", $e->getMessage());
         }
@@ -227,12 +227,12 @@ final class ExerciseController extends Controller
         );
         if ($attachment) {
             $this->files->remove($attachment["stored_name"]);
-            Flash::add("success", "Evidence removed.");
+            Flash::add("success", "File removed.");
             $this->redirect(
                 "exercise/view?id=" . (int) $attachment["exercise_id"],
             );
         }
-        Flash::add("error", "Evidence not found.");
+        Flash::add("error", "File not found.");
         $this->redirect("exercise");
     }
     public function export(): void

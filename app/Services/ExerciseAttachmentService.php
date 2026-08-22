@@ -24,14 +24,14 @@ final class ExerciseAttachmentService
             !is_uploaded_file((string) ($file["tmp_name"] ?? ""))
         ) {
             throw new \RuntimeException(
-                "The evidence file could not be uploaded.",
+                "The file could not be uploaded.",
             );
         }
         if (
             (int) ($file["size"] ?? 0) < 1 ||
             (int) $file["size"] > 5 * 1024 * 1024
         ) {
-            throw new \RuntimeException("Evidence must be 5 MB or smaller.");
+            throw new \RuntimeException("File must be 5 MB or smaller.");
         }
         $mime = (new \finfo(FILEINFO_MIME_TYPE))->file(
             (string) $file["tmp_name"],
@@ -39,12 +39,12 @@ final class ExerciseAttachmentService
         $extension = self::ALLOWED[$mime] ?? null;
         if ($extension === null) {
             throw new \RuntimeException(
-                "Evidence must be a genuine JPG, PNG, or PDF file.",
+                "File must be a genuine JPG, PNG, or PDF file.",
             );
         }
         $directory = SRO_ROOT . "/public/uploads/exercise-evidence";
         if (!is_dir($directory) && !mkdir($directory, 0755, true)) {
-            throw new \RuntimeException("Evidence storage is unavailable.");
+            throw new \RuntimeException("File storage is unavailable.");
         }
         $stored = bin2hex(random_bytes(20)) . "." . $extension;
         if (
@@ -53,7 +53,7 @@ final class ExerciseAttachmentService
                 $directory . "/" . $stored,
             )
         ) {
-            throw new \RuntimeException("Evidence could not be stored.");
+            throw new \RuntimeException("File could not be stored.");
         }
         return [
             "stored_name" => $stored,
