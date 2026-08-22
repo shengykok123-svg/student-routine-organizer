@@ -3,18 +3,37 @@
 use App\Core\View;
 
 $stats = [
-    ["Exercises", $summary["exercises"], "bi-activity"],
-    ["Diary Entries", $summary["diary_entries"], "bi-journal-bookmark"],
-    ["Money Records", $summary["money_records"], "bi-cash-stack"],
-    ["Habits", $summary["habits"], "bi-bullseye"],
+    ["New Accounts", $metrics["new_users"], "bi-person-plus", "text-primary"],
+    ["Exercise Records", $metrics["exercises"], "bi-activity", "text-primary"],
+    ["Diary Entries", $metrics["diary_entries"], "bi-journal-bookmark", "text-primary"],
+    ["Money Records", $metrics["money_records"], "bi-cash-stack", "text-success"],
+    ["Habit Check-ins", $metrics["habit_checkins"], "bi-check2-circle", "text-warning"],
+    ["Expenses", "RM " . number_format((float) $metrics["expenses"], 2), "bi-wallet2", "text-danger"],
+    ["Announcements", $metrics["announcements"], "bi-megaphone", "text-info"],
+    ["Admin Actions", $metrics["audit_actions"], "bi-shield-check", "text-secondary"],
 ];
 ?>
 <section class="page-heading">
     <div><p class="page-eyebrow">Administrator only</p><h1>Admin Dashboard</h1><p class="page-subtitle">Aggregate system activity only. Student records cannot be added or edited here.</p></div>
     <a class="btn btn-outline-secondary" href="<?= View::e($baseUrl) ?>/admin"><i class="bi bi-arrow-left"></i> System Administration</a>
 </section>
-<section class="admin-summary mb-4">
-    <?php foreach ($stats as [$label, $value, $icon]): ?><article class="content-card admin-stat"><i class="bi <?= $icon ?> text-primary fs-5"></i><strong><?= (int) $value ?></strong><span><?= View::e($label) ?></span></article><?php endforeach; ?>
+<section class="filter-panel mb-4">
+    <form class="row align-items-end g-3" method="get" action="<?= View::e($baseUrl) ?>/admin/dashboard">
+        <div class="col-sm-6 col-lg-4">
+            <label class="form-label" for="dashboard-range">Dashboard period</label>
+            <select class="form-select" id="dashboard-range" name="range">
+                <option value="7" <?= $range === "7" ? "selected" : "" ?>>Recent 7 Days</option>
+                <option value="30" <?= $range === "30" ? "selected" : "" ?>>Recent 30 Days</option>
+                <option value="90" <?= $range === "90" ? "selected" : "" ?>>Recent 90 Days</option>
+                <option value="all" <?= $range === "all" ? "selected" : "" ?>>All Time</option>
+            </select>
+        </div>
+        <div class="col-sm-auto"><button class="btn btn-primary" type="submit"><i class="bi bi-funnel"></i> Apply Filter</button></div>
+        <div class="col-12 col-lg"><p class="text-muted mb-0"><i class="bi bi-info-circle"></i> Showing <?= View::e($periodLabel) ?> aggregate activity.</p></div>
+    </form>
+</section>
+<section class="admin-summary admin-dashboard-summary mb-4">
+    <?php foreach ($stats as [$label, $value, $icon, $color]): ?><article class="content-card admin-stat"><i class="bi <?= $icon ?> <?= $color ?> fs-5"></i><strong><?= View::e((string) $value) ?></strong><span><?= View::e($label) ?></span></article><?php endforeach; ?>
 </section>
 <section class="dashboard-grid">
     <article class="content-card">

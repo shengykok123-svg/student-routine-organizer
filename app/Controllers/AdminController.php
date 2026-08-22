@@ -38,9 +38,17 @@ final class AdminController extends Controller
     public function dashboard(): void
     {
         $this->auth->requireAdmin();
+        $range = (string) ($_GET["range"] ?? "30");
+        if (!in_array($range, ["7", "30", "90", "all"], true)) {
+            $range = "30";
+        }
+
+        $metrics = $this->dashboardMetrics($range);
         $this->view("admin/dashboard", [
             "pageTitle" => "Admin Dashboard",
-            "summary" => $this->summary(),
+            "metrics" => $metrics,
+            "periodLabel" => $metrics["period_label"],
+            "range" => $range,
             "recentAudit" => $this->audit->recent(8),
             "recentAnnouncements" => $this->announcements->recent(4),
         ]);
@@ -263,6 +271,48 @@ final class AdminController extends Controller
         $summary["active_users"] = (int) $this->pdo->query("SELECT COUNT(*) FROM users WHERE account_status = 'Active'")->fetchColumn();
         $summary["suspended_users"] = (int) $this->pdo->query("SELECT COUNT(*) FROM users WHERE account_status = 'Suspended'")->fetchColumn();
         return $summary;
+    }
+
+    /** Returns aggregate, non-identifying metrics for the selected dashboard period. */
+    private function dashboardMetrics(string $range): array
+    {
+        $periods = [
+            "7" => ["start" => date("Y-m-d", strtotime("-6 days")), "label" => "Recent 7 Days"],
+            "30" => ["start" => date("Y-m-d", strtotime("-29 days")), "label" => "Recent 30 Days"],
+            "90" => ["start" => date("Y-m-d", strtotime("-89 days")), "label" => "Recent 90 Days"],
+            "all" => ["start" => null, "label" => "All Time"],
+        ];
+        $period = $periods[$range];
+        $start = $period["start"];
+
+        $count = function (string $table, string $dateColumn) use ($start): int {
+            $sql = "SELECT COUNT(*) FROM {$table}";
+            if ($start !== null) {
+                $sql .= " WHERE {$dateColumn} >= ?";
+            }
+            $statement = $this->pdo->prepare($sql);
+            $statement->execute($start === null ? [] : [$start]);
+            return (int) $statement->fetchColumn();
+        };
+
+        $expenseSql = "SELECT COALESCE(SUM(amount), 0) FROM money_records WHERE transaction_type = 'Expense'";
+        if ($start !== null) {
+            $expenseSql .= " AND transaction_date >= ?";
+        }
+        $expenses = $this->pdo->prepare($expenseSql);
+        $expenses->execute($start === null ? [] : [$start]);
+
+        return [
+            "period_label" => $period["label"],
+            "new_users" => $count("users", "created_at"),
+            "exercises" => $count("exercises", "exercise_date"),
+            "diary_entries" => $count("diary_entries", "entry_date"),
+            "money_records" => $count("money_records", "transaction_date"),
+            "habit_checkins" => $count("habit_logs", "check_in_date"),
+            "expenses" => (float) $expenses->fetchColumn(),
+            "announcements" => $count("announcements", "created_at"),
+            "audit_actions" => $count("admin_audit_logs", "created_at"),
+        ];
     }
 
     /** @return array{0:string,1:string,2:string} */

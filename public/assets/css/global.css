@@ -880,6 +880,9 @@ textarea.form-control {
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 14px;
 }
+.admin-dashboard-summary {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
 .admin-stat {
   text-align: center;
   padding: 17px 10px;
