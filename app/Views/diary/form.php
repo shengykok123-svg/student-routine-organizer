@@ -1,2 +1,140 @@
-<?php use App\Core\Csrf; use App\Core\View; $isEdit=isset($entry['entry_id']); ?>
-<section class="page-heading"><div><p class="page-eyebrow">Diary journal</p><h1><?= $isEdit?'Edit Reflection':'New Reflection' ?></h1><p class="page-subtitle">Give your moment a title and write what is on your mind.</p></div><a class="btn btn-outline-secondary" href="<?= View::e($baseUrl) ?>/diary"><i class="bi bi-arrow-left"></i> Back to Journal</a></section><?php foreach($errors as $error): ?><div class="app-flash flash-error"><i class="bi bi-exclamation-circle-fill"></i><?= View::e($error) ?></div><?php endforeach; ?><section class="form-panel form-panel-wide"><form method="post" enctype="multipart/form-data" action="<?= View::e($baseUrl) ?>/diary/<?= $isEdit?'update':'store' ?>"><input type="hidden" name="_csrf" value="<?= View::e(Csrf::token()) ?>"><?php if($isEdit): ?><input type="hidden" name="entry_id" value="<?= (int)$entry['entry_id'] ?>"><?php endif; ?><div class="row g-4"><div class="col-12"><label class="form-label" for="title">Title <span class="text-danger">*</span></label><input class="form-control" id="title" name="title" maxlength="150" value="<?= View::e($entry['title']??'') ?>" placeholder="Give this reflection a title" required></div><div class="col-12"><label class="form-label" for="content">Your Thoughts <span class="text-danger">*</span></label><textarea class="form-control" id="content" rows="9" name="content" maxlength="10000" required placeholder="What happened today? How are you feeling?"><?= View::e($entry['content']??'') ?></textarea></div><div class="col-md-4"><label class="form-label" for="mood">Mood <span class="text-danger">*</span></label><select class="form-select" id="mood" name="mood"><?php foreach($moods as $m): ?><option <?= ($entry['mood']??'Neutral')===$m?'selected':'' ?>><?= View::e($m) ?></option><?php endforeach; ?></select></div><div class="col-md-4"><label class="form-label" for="mood_score">Mood Score (1–10) <span class="text-danger">*</span></label><input class="form-control" id="mood_score" type="number" min="1" max="10" name="mood_score" value="<?= (int)($entry['mood_score']??5) ?>"></div><div class="col-md-4"><label class="form-label" for="entry_date">Date <span class="text-danger">*</span></label><input class="form-control" id="entry_date" type="date" max="<?= date('Y-m-d') ?>" name="entry_date" value="<?= View::e($entry['entry_date']??date('Y-m-d')) ?>"></div><div class="col-md-8"><label class="form-label" for="image">Photo <span class="text-muted">(optional)</span></label><input class="form-control" id="image" type="file" name="image" accept="image/jpeg,image/png,image/webp"><div class="form-text">JPG, PNG or WebP. Maximum 5 MB.</div></div><div class="col-md-4 d-flex align-items-end"><div class="form-check form-check-card w-100"><input class="form-check-input" id="favorite" type="checkbox" name="is_favorite" <?= !empty($entry['is_favorite'])?'checked':'' ?>><label class="form-check-label" for="favorite"><i class="bi bi-star-fill text-warning me-1"></i> Favourite Memory</label></div></div><?php if($isEdit&&($entry['image_path']??'')): ?><div class="col-12"><div class="existing-file"><img src="<?= View::e($baseUrl) ?>/uploads/diary/<?= View::e($entry['image_path']) ?>" alt="Current reflection photo"><div><strong>Current photo</strong><div class="form-check mt-2"><input class="form-check-input" id="remove_image" type="checkbox" name="remove_image"><label class="form-check-label" for="remove_image">Remove current photo</label></div></div></div></div><?php endif; ?></div><div class="form-actions"><a class="btn btn-outline-secondary" href="<?= View::e($baseUrl) ?>/diary">Cancel</a><button class="btn btn-primary"><i class="bi bi-check2-circle"></i> Save Reflection</button></div></form></section>
+<?php
+
+use App\Core\Csrf;
+use App\Core\View;
+
+$isEdit = isset($entry['entry_id']);
+?>
+
+<section class="page-heading">
+    <div>
+        <p class="page-eyebrow">Diary journal</p>
+        <h1><?= $isEdit ? 'Edit Reflection' : 'New Reflection' ?></h1>
+        <p class="page-subtitle">Give your moment a title and write what is on your mind.</p>
+    </div>
+    <a class="btn btn-outline-secondary" href="<?= View::e($baseUrl) ?>/diary">
+        <i class="bi bi-arrow-left"></i> Back to Journal
+    </a>
+</section>
+
+<?php foreach ($errors as $error): ?>
+    <div class="app-flash flash-error">
+        <i class="bi bi-exclamation-circle-fill"></i>
+        <?= View::e($error) ?>
+    </div>
+<?php endforeach; ?>
+
+<section class="form-panel form-panel-wide">
+    <form
+        method="post"
+        enctype="multipart/form-data"
+        action="<?= View::e($baseUrl) ?>/diary/<?= $isEdit ? 'update' : 'store' ?>"
+    >
+        <input type="hidden" name="_csrf" value="<?= View::e(Csrf::token()) ?>">
+
+        <?php if ($isEdit): ?>
+            <input type="hidden" name="entry_id" value="<?= (int) $entry['entry_id'] ?>">
+        <?php endif; ?>
+
+        <div class="row g-4">
+            <div class="col-12">
+                <label class="form-label" for="title">Title <span class="text-danger">*</span></label>
+                <input
+                    class="form-control"
+                    id="title"
+                    name="title"
+                    maxlength="150"
+                    value="<?= View::e($entry['title'] ?? '') ?>"
+                    placeholder="Give this reflection a title"
+                    required
+                >
+            </div>
+
+            <div class="col-12">
+                <label class="form-label" for="content">Your Thoughts <span class="text-danger">*</span></label>
+                <textarea
+                    class="form-control"
+                    id="content"
+                    rows="9"
+                    name="content"
+                    maxlength="10000"
+                    placeholder="What happened today? How are you feeling?"
+                    required
+                ><?= View::e($entry['content'] ?? '') ?></textarea>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label" for="mood">Mood <span class="text-danger">*</span></label>
+                <select class="form-select" id="mood" name="mood">
+                    <?php foreach ($moods as $mood): ?>
+                        <option <?= ($entry['mood'] ?? 'Neutral') === $mood ? 'selected' : '' ?>>
+                            <?= View::e($mood) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label" for="mood_score">Mood Score (1–10) <span class="text-danger">*</span></label>
+                <input
+                    class="form-control"
+                    id="mood_score"
+                    type="number"
+                    min="1"
+                    max="10"
+                    name="mood_score"
+                    value="<?= (int) ($entry['mood_score'] ?? 5) ?>"
+                >
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label" for="entry_date">Date <span class="text-danger">*</span></label>
+                <input
+                    class="form-control"
+                    id="entry_date"
+                    type="date"
+                    max="<?= date('Y-m-d') ?>"
+                    name="entry_date"
+                    value="<?= View::e($entry['entry_date'] ?? date('Y-m-d')) ?>"
+                >
+            </div>
+
+            <div class="col-md-8">
+                <label class="form-label" for="image">Photo <span class="text-muted">(optional)</span></label>
+                <input class="form-control" id="image" type="file" name="image" accept="image/jpeg,image/png,image/webp">
+                <div class="form-text">JPG, PNG or WebP. Maximum 5 MB.</div>
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end">
+                <div class="form-check form-check-card w-100">
+                    <input class="form-check-input" id="favorite" type="checkbox" name="is_favorite" <?= !empty($entry['is_favorite']) ? 'checked' : '' ?>>
+                    <label class="form-check-label" for="favorite">
+                        <i class="bi bi-star-fill text-warning me-1"></i> Favourite Memory
+                    </label>
+                </div>
+            </div>
+
+            <?php if ($isEdit && ($entry['image_path'] ?? '')): ?>
+                <div class="col-12">
+                    <div class="existing-file">
+                        <img src="<?= View::e($baseUrl) ?>/uploads/diary/<?= View::e($entry['image_path']) ?>" alt="Current reflection photo">
+                        <div>
+                            <strong>Current photo</strong>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" id="remove_image" type="checkbox" name="remove_image">
+                                <label class="form-check-label" for="remove_image">Remove current photo</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <div class="form-actions">
+            <a class="btn btn-outline-secondary" href="<?= View::e($baseUrl) ?>/diary">Cancel</a>
+            <button class="btn btn-primary">
+                <i class="bi bi-check2-circle"></i> Save Reflection
+            </button>
+        </div>
+    </form>
+</section>

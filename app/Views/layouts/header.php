@@ -38,6 +38,7 @@ $navigation = [
     <link rel="stylesheet" href="<?= View::e($baseUrl) ?>/assets/css/register-polish.css">
     <link rel="stylesheet" href="<?= View::e($baseUrl) ?>/assets/css/dashboard-polish.css">
     <link rel="stylesheet" href="<?= View::e($baseUrl) ?>/assets/css/landing-redesign.css">
+    <link rel="stylesheet" href="<?= View::e($baseUrl) ?>/assets/css/diary-reader.css">
 </head>
 <body class="<?= $authenticated ? 'app-body' : 'auth-body' ?>">
 <?php if ($authenticated): ?>
