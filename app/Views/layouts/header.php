@@ -60,6 +60,7 @@ $navigation = $isAdmin ? [
     <link rel="stylesheet" href="<?= View::e($baseUrl) ?>/assets/css/dashboard-polish.css">
     <link rel="stylesheet" href="<?= View::e($baseUrl) ?>/assets/css/landing-redesign.css">
     <link rel="stylesheet" href="<?= View::e($baseUrl) ?>/assets/css/diary-reader.css">
+    <link rel="stylesheet" href="<?= View::e($baseUrl) ?>/assets/css/theme-overrides.css">
 </head>
 <body class="<?= $authenticated ? 'app-body' : 'auth-body' ?>" data-theme-endpoint="<?= $authenticated ? View::e($baseUrl) . '/settings/theme' : '' ?>" data-theme-csrf="<?= $authenticated ? View::e(Csrf::token()) : '' ?>">
 <?php if ($authenticated): ?>

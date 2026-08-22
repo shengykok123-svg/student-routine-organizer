@@ -1,0 +1,245 @@
+/* Theme-specific rules are loaded last so component styles retain the same contrast in dark mode. */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --bs-body-bg: var(--sro-bg);
+  --bs-body-color: var(--sro-text);
+  --bs-emphasis-color: var(--sro-text);
+  --bs-secondary-color: var(--sro-muted);
+  --bs-secondary-bg: var(--sro-surface);
+  --bs-tertiary-bg: #20293d;
+  --bs-border-color: var(--sro-border);
+  --bs-heading-color: var(--sro-text);
+}
+
+html[data-theme="dark"] body,
+html[data-theme="dark"] .app-body,
+html[data-theme="dark"] .app-main {
+  background: var(--sro-bg);
+  color: var(--sro-text);
+}
+
+/* Shared application surfaces, including tables and panels supplied by older module styles. */
+html[data-theme="dark"] .content-card,
+html[data-theme="dark"] .form-panel,
+html[data-theme="dark"] .filter-panel,
+html[data-theme="dark"] .stat-card,
+html[data-theme="dark"] .app-topbar,
+html[data-theme="dark"] .modal-content,
+html[data-theme="dark"] .modal-header,
+html[data-theme="dark"] .modal-footer,
+html[data-theme="dark"] .dropdown-menu,
+html[data-theme="dark"] .offcanvas,
+html[data-theme="dark"] .form-check-card,
+html[data-theme="dark"] .existing-file,
+html[data-theme="dark"] .profile-picture-editor,
+html[data-theme="dark"] .money-budget-card,
+html[data-theme="dark"] .money-budget-summary > div,
+html[data-theme="dark"] .budget-progress-item,
+html[data-theme="dark"] .activity-item,
+html[data-theme="dark"] .auth-login-card,
+html[data-theme="dark"] .auth-register-card,
+html[data-theme="dark"] .auth-form-pane {
+  background: var(--sro-surface) !important;
+  color: var(--sro-text);
+  border-color: var(--sro-border) !important;
+}
+
+html[data-theme="dark"] .app-table,
+html[data-theme="dark"] .app-table tbody,
+html[data-theme="dark"] .app-table tbody tr,
+html[data-theme="dark"] .app-table tbody td,
+html[data-theme="dark"] .table,
+html[data-theme="dark"] .table > :not(caption) > * > * {
+  color: var(--sro-text) !important;
+  background-color: var(--sro-surface) !important;
+  border-color: var(--sro-border) !important;
+}
+
+html[data-theme="dark"] .app-table thead th,
+html[data-theme="dark"] .table thead th,
+html[data-theme="dark"] .record-count {
+  color: var(--sro-text) !important;
+  background: #20293d !important;
+  border-color: var(--sro-border) !important;
+}
+
+html[data-theme="dark"] .app-table tbody tr:hover > *,
+html[data-theme="dark"] .table-hover > tbody > tr:hover > * {
+  background-color: #242e45 !important;
+  color: var(--sro-text) !important;
+}
+
+/* Inputs must use a dark surface too; otherwise their inherited light component background hides text. */
+html[data-theme="dark"] .form-control,
+html[data-theme="dark"] .form-select,
+html[data-theme="dark"] .input-group-text,
+html[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select {
+  color: var(--sro-text) !important;
+  background-color: #1c2436 !important;
+  border-color: var(--sro-border) !important;
+}
+
+html[data-theme="dark"] .form-control::placeholder,
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+  color: #8f9ab1 !important;
+  opacity: 1;
+}
+
+html[data-theme="dark"] .form-label,
+html[data-theme="dark"] .form-check-label,
+html[data-theme="dark"] .dropdown-item,
+html[data-theme="dark"] .modal-title,
+html[data-theme="dark"] .page-heading h1,
+html[data-theme="dark"] h1,
+html[data-theme="dark"] h2,
+html[data-theme="dark"] h3,
+html[data-theme="dark"] h4,
+html[data-theme="dark"] h5,
+html[data-theme="dark"] h6 {
+  color: var(--sro-text);
+}
+
+html[data-theme="dark"] .text-muted,
+html[data-theme="dark"] .page-subtitle,
+html[data-theme="dark"] .small,
+html[data-theme="dark"] .activity-date {
+  color: var(--sro-muted) !important;
+}
+
+html[data-theme="dark"] .dropdown-item:hover,
+html[data-theme="dark"] .dropdown-item:focus,
+html[data-theme="dark"] .theme-setting-option:hover {
+  background: #29334a;
+  color: var(--sro-text);
+}
+
+html[data-theme="dark"] .btn-outline-secondary,
+html[data-theme="dark"] .btn-outline-light,
+html[data-theme="dark"] .btn-light {
+  color: var(--sro-text);
+  border-color: var(--sro-border);
+  background-color: transparent;
+}
+
+html[data-theme="dark"] .btn-close {
+  filter: invert(1);
+}
+
+/* Dashboard and money tracker components that previously used white gradients. */
+html[data-theme="dark"] .motivation-card {
+  background: linear-gradient(135deg, #20283c, #1a2132) !important;
+}
+
+html[data-theme="dark"] .money-budget-summary,
+html[data-theme="dark"] .budget-progress-track,
+html[data-theme="dark"] .money-quick-filters button:not(.is-active),
+html[data-theme="dark"] .money-quick-filters a {
+  background: #1c2436 !important;
+  border-color: var(--sro-border) !important;
+  color: var(--sro-text) !important;
+}
+
+html[data-theme="dark"] .profile-picture-editor,
+html[data-theme="dark"] .money-budget-card,
+html[data-theme="dark"] .money-budget-summary > div {
+  box-shadow: none;
+}
+
+/* Guest landing page: retain its hero but convert its formerly white content areas. */
+html[data-theme="dark"] .landing-page {
+  --landing-ink: var(--sro-text);
+  --landing-muted: var(--sro-muted);
+  background: var(--sro-bg) !important;
+  color: var(--sro-text);
+}
+
+html[data-theme="dark"] .landing-nav,
+html[data-theme="dark"] .landing-features,
+html[data-theme="dark"] .landing-benefits {
+  background: var(--sro-bg) !important;
+  color: var(--sro-text);
+  border-color: var(--sro-border) !important;
+}
+
+html[data-theme="dark"] .landing-module-card,
+html[data-theme="dark"] .landing-feature,
+html[data-theme="dark"] .landing-dashboard-preview,
+html[data-theme="dark"] .preview-body main,
+html[data-theme="dark"] .preview-chart {
+  background: var(--sro-surface) !important;
+  color: var(--sro-text);
+  border-color: var(--sro-border) !important;
+}
+
+html[data-theme="dark"] .landing-module-card p,
+html[data-theme="dark"] .landing-benefit p,
+html[data-theme="dark"] .landing-section-heading p,
+html[data-theme="dark"] .preview-body main,
+html[data-theme="dark"] .preview-logo,
+html[data-theme="dark"] .preview-user {
+  color: var(--sro-muted) !important;
+}
+
+html[data-theme="dark"] .landing-module-card h3,
+html[data-theme="dark"] .landing-section-heading h2,
+html[data-theme="dark"] .landing-benefit strong {
+  color: var(--sro-text) !important;
+}
+
+html[data-theme="dark"] .register-visual-copy > p:last-child,
+html[data-theme="dark"] .register-visual-caption {
+  color: var(--sro-muted) !important;
+}
+
+html[data-theme="dark"] .preview-mini-cards i {
+  background: var(--sro-primary-light) !important;
+}
+
+/* Diary reader uses a paper treatment in light mode; provide the same structure with readable dark paper. */
+html[data-theme="dark"] .journal-paper {
+  background:
+    linear-gradient(
+      90deg,
+      transparent 38px,
+      rgba(255, 165, 182, 0.16) 39px,
+      transparent 40px
+    ),
+    repeating-linear-gradient(#1a2132 0, #1a2132 35px, #303a52 36px) !important;
+  border-color: var(--sro-border) !important;
+}
+
+html[data-theme="dark"] .journal-photo,
+html[data-theme="dark"] .journal-insight,
+html[data-theme="dark"] .journal-options {
+  background: var(--sro-surface) !important;
+  border-color: var(--sro-border) !important;
+}
+
+html[data-theme="dark"] .journal-prompt {
+  background: #24213d !important;
+  border-color: #3d376b !important;
+}
+
+html[data-theme="dark"] .journal-copy,
+html[data-theme="dark"] .journal-score-label strong,
+html[data-theme="dark"] .journal-mood-summary strong {
+  color: var(--sro-text) !important;
+}
+
+html[data-theme="dark"] .journal-copy,
+html[data-theme="dark"] .journal-kicker,
+html[data-theme="dark"] .journal-mood-summary small,
+html[data-theme="dark"] .journal-score-label,
+html[data-theme="dark"] .journal-options summary,
+html[data-theme="dark"] .journal-options p {
+  color: var(--sro-muted) !important;
+}
+
+@media (max-width: 575px) {
+  html[data-theme="dark"] .landing-nav {
+    background: #071431 !important;
+  }
+}
