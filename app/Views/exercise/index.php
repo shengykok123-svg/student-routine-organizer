@@ -1,6 +1,15 @@
 <?php use App\Core\View;
 use App\Services\ExerciseValidationService;
 
+$activityIcons = [
+    "Jogging" => "bi-person-running",
+    "Badminton" => "bi-trophy",
+    "Walking" => "bi-person-walking",
+    "Cycling" => "bi-bicycle",
+    "Gym" => "bi-dumbbell",
+    "Swimming" => "bi-water",
+];
+
 ?>
 <section class="page-heading">
     <div>
@@ -120,8 +129,9 @@ use App\Services\ExerciseValidationService;
                                                                                 <tr>
                                                                                     <td>
                                                                                         <div class="d-flex align-items-center gap-2">
-                                                                                            <span class="activity-badge">
-                                                                                                <i class="bi bi-activity">
+                                                                                            <?php $activityIcon = $activityIcons[$record["activity_type"]] ?? "bi-activity"; ?>
+                                                                                            <span class="activity-badge" title="<?= View::e($record["activity_type"]) ?>">
+                                                                                                <i class="bi <?= View::e($activityIcon) ?>" aria-hidden="true">
                                                                                                 </i>
                                                                                             </span>
                                                                                             <strong>
