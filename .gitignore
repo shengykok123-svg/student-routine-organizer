@@ -10,6 +10,8 @@ WORKSPACE_HANDOFF.md
 # User-generated uploads stay on the deployment host
 /public/uploads/profile/*
 !/public/uploads/profile/.htaccess
+/public/uploads/diary/*
+!/public/uploads/diary/.htaccess
 /public/uploads/money-receipts/*
 !/public/uploads/money-receipts/.htaccess
 /public/uploads/money/*
