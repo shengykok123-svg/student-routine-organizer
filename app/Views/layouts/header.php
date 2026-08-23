@@ -16,7 +16,7 @@ $activeModule = match (true) {
 $imageBase = View::e($baseUrl) . '/assets/images';
 $unreadNotificationCount = max(0, (int) ($unreadNotificationCount ?? 0));
 $notificationBadge = $unreadNotificationCount > 99 ? '99+' : (string) $unreadNotificationCount;
-$isAdmin = $authenticated && $auth->role() === 'Admin';
+$isAdmin = $authenticated && $auth->isAdmin();
 $themePreference = $authenticated ? $auth->themePreference() : 'system';
 $homePath = $isAdmin ? 'admin' : 'dashboard';
 $navigation = $isAdmin ? [

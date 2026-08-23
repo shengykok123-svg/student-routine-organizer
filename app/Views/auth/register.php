@@ -41,13 +41,6 @@ $assetBase = View::e($baseUrl) . "/assets/images";
                                                     <label class="form-label" for="email">Email</label>
                                                         <input class="form-control" id="email" type="email" name="email" required autocomplete="email" placeholder="Enter your email address">
                                                     </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label" for="role">Role</label>
-                                                            <select class="form-select" id="role" name="role">
-                                                                <option value="Student">Student</option>
-                                                                    <option value="Admin">Admin</option>
-                                                                    </select>
-                                                                </div>
                                                                 <div class="mb-3">
                                                                     <label class="form-label" for="password">Password</label>
                                                                         <input class="form-control" id="password" type="password" name="password" required minlength="6" autocomplete="new-password" placeholder="Create a password">

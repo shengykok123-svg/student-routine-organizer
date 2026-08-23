@@ -12,13 +12,19 @@ CREATE TABLE IF NOT EXISTS users (
     full_name VARCHAR(100) NULL,
     profile_image_path VARCHAR(255) NULL,
     password VARCHAR(255) NOT NULL,
-    role ENUM('Student', 'Admin') NOT NULL DEFAULT 'Student',
+    role ENUM('Student', 'Admin', 'Super Admin') NOT NULL DEFAULT 'Student',
     account_status ENUM('Active', 'Suspended') NOT NULL DEFAULT 'Active',
     terms_accepted_at TIMESTAMP NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY uq_users_username (username),
     UNIQUE KEY uq_users_email (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- The only account permitted to create administrator accounts.
+-- Password: SROAdmin!2026 (stored as a bcrypt hash).
+INSERT INTO users (username, email, full_name, password, role, terms_accepted_at)
+VALUES ('sro_admin', 'sro.admin@studentroutine.local', 'SRO Super Admin', '$2y$10$XTPw411sciLT2g4qRRvAFurtO7Gy1Me3C/laeMzKWLLoTGiredB6i', 'Super Admin', CURRENT_TIMESTAMP)
+ON DUPLICATE KEY UPDATE role = 'Super Admin', account_status = 'Active';
 
 CREATE TABLE IF NOT EXISTS exercises (
     exercise_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

@@ -24,7 +24,7 @@ final class NotificationController extends Controller
             "pageTitle" => "Notifications",
             "notifications" => $this->notifications->list($id),
             "dashboardPath" =>
-                $this->auth->role() === "Admin" ? "admin/dashboard" : "dashboard",
+                $this->auth->isAdmin() ? "admin/dashboard" : "dashboard",
         ]);
     }
     public function read(): void

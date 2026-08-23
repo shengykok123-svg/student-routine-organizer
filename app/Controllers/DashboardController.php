@@ -19,7 +19,7 @@ final class DashboardController extends Controller
     public function index(): void
     {
         $id = $this->auth->requireLogin();
-        if ($this->auth->role() === "Admin") {
+        if ($this->auth->isAdmin()) {
             $this->redirect("admin");
         }
 

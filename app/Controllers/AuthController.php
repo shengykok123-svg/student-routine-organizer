@@ -52,7 +52,7 @@ final class AuthController extends Controller
         isset($_POST["remember"])
             ? $this->rememberMe->issue((int) $user["user_id"])
             : $this->rememberMe->clear();
-        $this->redirect($user["role"] === "Admin" ? "admin" : "dashboard");
+        $this->redirect($this->auth->isAdmin() ? "admin" : "dashboard");
     }
     public function registerForm(): void
     {
@@ -70,7 +70,6 @@ final class AuthController extends Controller
         $email = trim((string) ($_POST["email"] ?? ""));
         $password = (string) ($_POST["password"] ?? "");
         $confirm = (string) ($_POST["confirm_password"] ?? "");
-        $role = (string) ($_POST["role"] ?? "Student");
         if ($name === "" || mb_strlen($name) > 100) {
             Flash::add(
                 "error",
@@ -87,8 +86,6 @@ final class AuthController extends Controller
             Flash::add("error", "Password must be at least 6 characters.");
         } elseif ($password !== $confirm) {
             Flash::add("error", "Password confirmation does not match.");
-        } elseif (!in_array($role, ["Student", "Admin"], true)) {
-            Flash::add("error", "Choose a valid account role.");
         } elseif (!isset($_POST["accept_terms"])) {
             Flash::add("error", "You must accept the Terms & Conditions.");
         } elseif ($this->users->usernameOrEmailExists($username, $email)) {
@@ -102,7 +99,7 @@ final class AuthController extends Controller
                 $email,
                 $password,
                 $name,
-                $role,
+                "Student",
             );
             $this->notifications->create(
                 $id,
@@ -130,6 +127,6 @@ final class AuthController extends Controller
     /** Routes each signed-in role to its appropriate landing page. */
     private function authenticatedHome(): string
     {
-        return $this->auth->role() === "Admin" ? "admin" : "dashboard";
+        return $this->auth->isAdmin() ? "admin" : "dashboard";
     }
 }

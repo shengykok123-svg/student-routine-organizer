@@ -12,23 +12,23 @@ One PHP/MySQL application that combines Exercise, Diary, Money, and Habit tracki
 1. Copy the `student-routine-organizer` folder into `C:\xampp\htdocs`.
 2. Start Apache and MySQL in XAMPP.
 3. In phpMyAdmin, import `database/student_routine_organizer.sql`. It creates the required `student_routine_organizer` database and all tables.
+   For an existing database created before the Super Admin change, import `database/migrations/20260823_super_admin.sql` instead; it promotes the existing `sro_admin` account without changing its password.
 4. Optional: import `database/seed_data.sql` after the schema to create the `demo_student` account plus 10 Exercise, 10 Diary, 10 Money, 10 Habit, and 10 Habit Log records. Newly registered users start with no seed records; re-importing does not duplicate the demo records.
 5. Open `http://localhost/student-routine-organizer/`. The root entry redirects to `public/`; no VirtualHost is needed.
-6. Register a Student account, then sign in.
+6. Register a Student account, then sign in. Registration always creates a Student account.
 
 The default database connection is XAMPP's `127.0.0.1`, database `student_routine_organizer`, user `root`, and an empty password. If your local MySQL differs, set `SRO_DB_HOST`, `SRO_DB_NAME`, `SRO_DB_USER`, and `SRO_DB_PASSWORD` in the web-server environment. Set `SRO_BASE_URL` only if the folder is hosted at a non-standard URL.
 
 Before deployment, set a long random `SRO_REMEMBER_SECRET`. The built-in fallback only exists to make the class project runnable locally.
 
-## Creating an Admin safely
+## Administrator accounts
 
-Register a normal account first, then use phpMyAdmin to run this query with that account's username:
+The built-in Super Admin account creates Administrator accounts through **System Administration → User Management**. Public registration can only create Student accounts.
 
-```sql
-UPDATE users SET role = 'Admin' WHERE username = 'your_registered_username';
-```
+- Username: `sro_admin`
+- Password: `SROAdmin!2026`
 
-This never stores or exposes a plaintext password: registration already stored a `password_hash()` value.
+Only the Super Admin can assign the Administrator role. Administrators retain access to the existing administration dashboard and can manage Student accounts, but cannot create or manage administrator accounts.
 
 ## Modules
 
@@ -46,7 +46,7 @@ This never stores or exposes a plaintext password: registration already stored a
 4. Sign in as Student B, replace record IDs in URLs/forms, and confirm Student A's records cannot be viewed, edited, or deleted.
 5. Upload a valid and invalid exercise/diary file; confirm only allowed files up to 5 MB are accepted.
 6. Confirm delete actions require POST and a valid CSRF token.
-7. Promote a registered user to Admin, confirm `/admin` displays users and summaries, then confirm a Student is redirected away from that route.
+7. Sign in as `sro_admin`, create an Administrator from User Management, and confirm the new Administrator can access `/admin` but cannot create or manage administrator accounts. Confirm a Student is redirected away from that route.
 8. Confirm dashboard cards, return navigation, styling, and uploaded files work from the XAMPP URL.
 9. In Money Tracker, change the search text, period, type, or category and confirm the table and totals update automatically without a Filter button. Export CSV and confirm it contains those same filtered records.
 10. Add a Money transaction with a JPG, PNG, or WebP receipt; reject a non-image and an image over 5 MB; then confirm edit preserves, replaces, and removes the receipt as expected. Deleting the transaction must delete its receipt too.

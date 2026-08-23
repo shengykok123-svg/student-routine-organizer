@@ -84,6 +84,7 @@ $router->post("admin/users/resume", [$adminController, "resume"]);
 $router->get("admin/announcements", [$adminController, "announcements"]);
 $router->post("admin/announcements", [$adminController, "storeAnnouncement"]);
 $router->get("admin/audit", [$adminController, "audit"]);
+$router->get("admin/audit/export", [$adminController, "exportAudit"]);
 $router->get("admin/maintenance", [$adminController, "maintenance"]);
 $router->get("admin/maintenance/export", [$adminController, "exportSummary"]);
 $router->post("admin/maintenance/clean-uploads", [$adminController, "cleanUploads"]);

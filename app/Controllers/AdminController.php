@@ -51,7 +51,7 @@ final class AdminController extends Controller
             "metrics" => $metrics,
             "periodLabel" => $metrics["period_label"],
             "range" => $range,
-            "recentAudit" => $this->audit->recent(8),
+            "recentAudit" => $this->audit->recent(8, $this->auditOwnerId()),
             "recentAnnouncements" => $this->announcements->recent(4),
         ]);
     }
@@ -64,13 +64,19 @@ final class AdminController extends Controller
             "pageTitle" => "User Management",
             "users" => $this->users->all(...$filters),
             "filters" => array_combine(["search", "role", "status"], $filters),
+            "canManageAdministrators" => $this->auth->isSuperAdmin(),
         ]);
     }
 
     public function createForm(): void
     {
         $this->auth->requireAdmin();
-        $this->view("admin/user_form", ["pageTitle" => "Add User", "user" => null, "errors" => []]);
+        $this->view("admin/user_form", [
+            "pageTitle" => "Add User",
+            "user" => null,
+            "errors" => [],
+            "canManageAdministrators" => $this->auth->isSuperAdmin(),
+        ]);
     }
 
     public function store(): void
@@ -78,9 +84,14 @@ final class AdminController extends Controller
         $this->requirePost();
         $this->requireCsrf();
         $adminId = $this->adminId();
-        $data = $this->valid($_POST, true);
+        $data = $this->valid($_POST, true, $this->auth->isSuperAdmin());
         if ($data["errors"]) {
-            $this->view("admin/user_form", ["pageTitle" => "Add User", "user" => $_POST, "errors" => $data["errors"]]);
+            $this->view("admin/user_form", [
+                "pageTitle" => "Add User",
+                "user" => $_POST,
+                "errors" => $data["errors"],
+                "canManageAdministrators" => $this->auth->isSuperAdmin(),
+            ]);
             return;
         }
         $id = $this->users->create($data["username"], $data["email"], $data["password"], $data["full_name"], $data["role"]);
@@ -97,7 +108,15 @@ final class AdminController extends Controller
             Flash::add("error", "User not found.");
             $this->redirect("admin/users");
         }
-        $this->view("admin/user_form", ["pageTitle" => "Edit User", "user" => $user, "errors" => []]);
+        if (!$this->canManageUser($user)) {
+            $this->redirect("admin/users");
+        }
+        $this->view("admin/user_form", [
+            "pageTitle" => "Edit User",
+            "user" => $user,
+            "errors" => [],
+            "canManageAdministrators" => $this->auth->isSuperAdmin(),
+        ]);
     }
 
     public function update(): void
@@ -111,7 +130,10 @@ final class AdminController extends Controller
             Flash::add("error", "User not found.");
             $this->redirect("admin/users");
         }
-        $data = $this->valid($_POST, false, $id);
+        if (!$this->canManageUser($existing)) {
+            $this->redirect("admin/users");
+        }
+        $data = $this->valid($_POST, false, $this->auth->isSuperAdmin(), $id);
         if ($id === $adminId && $data["role"] !== $existing["role"]) {
             $data["errors"][] = "You cannot change your own administrator role.";
         }
@@ -120,7 +142,12 @@ final class AdminController extends Controller
         }
         if ($data["errors"]) {
             $_POST["user_id"] = $id;
-            $this->view("admin/user_form", ["pageTitle" => "Edit User", "user" => $_POST, "errors" => $data["errors"]]);
+            $this->view("admin/user_form", [
+                "pageTitle" => "Edit User",
+                "user" => $_POST,
+                "errors" => $data["errors"],
+                "canManageAdministrators" => $this->auth->isSuperAdmin(),
+            ]);
             return;
         }
         $this->users->updateProfile($id, $data["full_name"], $data["username"], $data["email"]);
@@ -144,6 +171,8 @@ final class AdminController extends Controller
             Flash::add("error", "User not found.");
         } elseif ($id === $adminId) {
             Flash::add("error", "You cannot delete your own account.");
+        } elseif (!$this->canManageUser($user)) {
+            // The helper adds the appropriate permission error.
         } elseif ($user["role"] === "Admin") {
             Flash::add("error", "Administrator accounts cannot be deleted; suspend access instead.");
         } elseif ($this->users->delete($id)) {
@@ -201,7 +230,41 @@ final class AdminController extends Controller
     public function audit(): void
     {
         $this->auth->requireAdmin();
-        $this->view("admin/audit", ["pageTitle" => "Admin Audit Log", "logs" => $this->audit->recent(150)]);
+        $scope = $this->auditOwnerId();
+        $filters = $this->auditFilters();
+        $this->view("admin/audit", [
+            "pageTitle" => "Admin Audit Log",
+            "logs" => $this->audit->search($filters, $scope),
+            "filters" => $filters,
+            "actions" => $this->audit->actions($scope),
+            "administrators" => $this->audit->administrators($scope),
+            "canViewAllAuditLogs" => $this->auth->isSuperAdmin(),
+        ]);
+    }
+
+    /** Exports the current role-scoped audit-log search as a spreadsheet-safe CSV. */
+    public function exportAudit(): void
+    {
+        $adminId = $this->adminId();
+        $logs = $this->audit->search($this->auditFilters(), $this->auditOwnerId(), null);
+        $this->audit->record($adminId, "audit_log_exported", null, count($logs) . " row(s)");
+
+        header("Content-Type: text/csv; charset=utf-8");
+        header("Content-Disposition: attachment; filename=sro-admin-audit-log-" . date("Ymd-His") . ".csv");
+        $output = fopen("php://output", "wb");
+        fputcsv($output, ["When", "Administrator", "Action", "Target", "Details", "IP Address"]);
+        foreach ($logs as $log) {
+            fputcsv($output, [
+                $this->csvValue($log["created_at"]),
+                $this->csvValue($log["admin_username"]),
+                $this->csvValue(ucwords(str_replace("_", " ", $log["action_name"]))),
+                $this->csvValue($log["target_username"] ?? ""),
+                $this->csvValue($log["details"] ?? ""),
+                $this->csvValue($log["ip_address"] ?? ""),
+            ]);
+        }
+        fclose($output);
+        exit();
     }
 
     public function maintenance(): void
@@ -242,6 +305,56 @@ final class AdminController extends Controller
         return (int) $this->auth->id();
     }
 
+    /** Super Admins review all administrator actions; Admins review only their own. */
+    private function auditOwnerId(): ?int
+    {
+        return $this->auth->isSuperAdmin() ? null : $this->adminId();
+    }
+
+    /** Normalizes the filters used for both the audit table and its CSV export. */
+    private function auditFilters(): array
+    {
+        $start = $this->validDate((string) ($_GET["start_date"] ?? ""));
+        $end = $this->validDate((string) ($_GET["end_date"] ?? ""));
+        $adminId = filter_var($_GET["admin_id"] ?? null, FILTER_VALIDATE_INT, ["options" => ["min_range" => 1]]);
+
+        return [
+            "search" => mb_substr(trim((string) ($_GET["search"] ?? "")), 0, 100),
+            "action" => mb_substr(trim((string) ($_GET["action"] ?? "")), 0, 80),
+            "admin_id" => $this->auth->isSuperAdmin() && $adminId !== false ? (int) $adminId : null,
+            "start_date" => $start,
+            "end_date" => $end,
+        ];
+    }
+
+    private function validDate(string $value): string
+    {
+        $date = \DateTimeImmutable::createFromFormat("!Y-m-d", $value);
+        return $date && $date->format("Y-m-d") === $value ? $value : "";
+    }
+
+    /** Prefixes spreadsheet formula-like CSV values so exported data remains safe. */
+    private function csvValue(mixed $value): mixed
+    {
+        return is_string($value) && $value !== "" && in_array($value[0], ["=", "+", "-", "@"], true)
+            ? "'" . $value
+            : $value;
+    }
+
+    /** Applies the account-management boundary between Admin and Super Admin. */
+    private function canManageUser(array $user): bool
+    {
+        if ($user["role"] === "Super Admin") {
+            Flash::add("error", "Super Admin accounts can only be managed through their own profile.");
+            return false;
+        }
+        if ($user["role"] === "Admin" && !$this->auth->isSuperAdmin()) {
+            Flash::add("error", "Only the Super Admin can manage administrator accounts.");
+            return false;
+        }
+        return true;
+    }
+
     private function changeAccountStatus(string $status): void
     {
         $this->requirePost();
@@ -253,6 +366,8 @@ final class AdminController extends Controller
             Flash::add("error", "User not found.");
         } elseif ($id === $adminId) {
             Flash::add("error", "You cannot change your own account status.");
+        } elseif (!$this->canManageUser($user)) {
+            // The helper adds the appropriate permission error.
         } elseif ($status === "Suspended" && $user["role"] === "Admin" && $user["account_status"] === "Active" && $this->users->countAdmins() <= 1) {
             Flash::add("error", "The last active administrator cannot be suspended.");
         } else {
@@ -334,7 +449,7 @@ final class AdminController extends Controller
     /** Groups new accounts by their current role and account status. */
     private function dashboardUserStatus(?string $start): array
     {
-        $labels = ["Active Students", "Suspended Students", "Active Admins", "Suspended Admins"];
+        $labels = ["Active Students", "Suspended Students", "Active Admins", "Suspended Admins", "Active Super Admins", "Suspended Super Admins"];
         $values = array_fill_keys($labels, 0);
         $sql = "SELECT role, account_status, COUNT(*) AS total FROM users";
         if ($start !== null) {
@@ -345,7 +460,12 @@ final class AdminController extends Controller
         $statement = $this->pdo->prepare($sql);
         $statement->execute($start === null ? [] : [$start]);
         foreach ($statement->fetchAll() as $row) {
-            $label = ($row["account_status"] === "Suspended" ? "Suspended" : "Active") . " " . ($row["role"] === "Admin" ? "Admins" : "Students");
+            $roleLabel = match ($row["role"]) {
+                "Admin" => "Admins",
+                "Super Admin" => "Super Admins",
+                default => "Students",
+            };
+            $label = ($row["account_status"] === "Suspended" ? "Suspended" : "Active") . " " . $roleLabel;
             if (isset($values[$label])) {
                 $values[$label] = (int) $row["total"];
             }
@@ -429,7 +549,7 @@ final class AdminController extends Controller
         return [trim((string) ($_GET["search"] ?? "")), (string) ($_GET["role"] ?? ""), (string) ($_GET["status"] ?? "")];
     }
 
-    private function valid(array $input, bool $passwordRequired, ?int $except = null): array
+    private function valid(array $input, bool $passwordRequired, bool $canManageAdministrators, ?int $except = null): array
     {
         $data = [
             "full_name" => trim((string) ($input["full_name"] ?? "")),
@@ -448,8 +568,11 @@ final class AdminController extends Controller
         if (!filter_var($data["email"], FILTER_VALIDATE_EMAIL)) {
             $errors[] = "Enter a valid email address.";
         }
-        if (!in_array($data["role"], ["Student", "Admin"], true)) {
-            $errors[] = "Choose a valid role.";
+        $allowedRoles = $canManageAdministrators ? ["Student", "Admin"] : ["Student"];
+        if (!in_array($data["role"], $allowedRoles, true)) {
+            $errors[] = $canManageAdministrators
+                ? "Choose a valid role."
+                : "Only the Super Admin can create or assign administrator accounts.";
         }
         if (($passwordRequired && strlen($data["password"]) < 6) || (!$passwordRequired && $data["password"] !== "" && strlen($data["password"]) < 6)) {
             $errors[] = "Password must be at least 6 characters.";

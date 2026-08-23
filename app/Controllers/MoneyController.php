@@ -342,7 +342,7 @@ final class MoneyController extends Controller
     private function studentId(): int
     {
         $userId = $this->auth->requireLogin();
-        if ($this->auth->role() === "Admin") {
+        if ($this->auth->isAdmin()) {
             $this->redirect("admin");
         }
         return $userId;

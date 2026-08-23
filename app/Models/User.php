@@ -138,7 +138,7 @@ final class User
             $term = "%{$search}%";
             $values = [$term, $term, $term];
         }
-        if (in_array($role, ["Student", "Admin"], true)) {
+        if (in_array($role, ["Student", "Admin", "Super Admin"], true)) {
             $where[] = "role = ?";
             $values[] = $role;
         }

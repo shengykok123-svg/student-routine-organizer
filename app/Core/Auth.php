@@ -39,6 +39,18 @@ final class Auth
         return (string) ($_SESSION["role"] ?? "");
     }
 
+    /** Returns whether the signed-in account has access to the admin area. */
+    public function isAdmin(): bool
+    {
+        return in_array($this->role(), ["Admin", "Super Admin"], true);
+    }
+
+    /** Returns whether the signed-in account can manage administrator accounts. */
+    public function isSuperAdmin(): bool
+    {
+        return $this->role() === "Super Admin";
+    }
+
     public function profileImagePath(): ?string
     {
         $path = $_SESSION["profile_image_path"] ?? null;
@@ -94,7 +106,7 @@ final class Auth
     public function requireAdmin(): void
     {
         $this->requireLogin();
-        if ($this->role() !== "Admin") {
+        if (!$this->isAdmin()) {
             Flash::add(
                 "error",
                 "You do not have permission to view that page.",

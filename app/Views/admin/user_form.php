@@ -2,6 +2,7 @@
 use App\Core\View;
 
 $edit = isset($user["user_id"]);
+$canManageAdministrators = $canManageAdministrators ?? false;
 ?>
 <section class="page-heading">
     <div>
@@ -57,23 +58,17 @@ $edit = isset($user["user_id"]);
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label" for="role">Role</label>
+                                        <?php if ($canManageAdministrators): ?>
                                             <select class="form-select" id="role" name="role">
-                                                <option value="Student" <?= ($user[
-                                                    "role"
-                                                ] ??
-                                                    "Student") ===
-                                                "Student"
-                                                    ? "selected"
-                                                    : "" ?>>Student</option>
-                                                    <option value="Admin" <?= ($user[
-                                                        "role"
-                                                    ] ??
-                                                        "") ===
-                                                    "Admin"
-                                                        ? "selected"
-                                                        : "" ?>>Admin</option>
-                                                    </select>
-                                                </div>
+                                                <option value="Student" <?= ($user["role"] ?? "Student") === "Student" ? "selected" : "" ?>>Student</option>
+                                                <option value="Admin" <?= ($user["role"] ?? "") === "Admin" ? "selected" : "" ?>>Admin</option>
+                                            </select>
+                                            <small class="form-text text-muted">Only the Super Admin can assign the Administrator role.</small>
+                                        <?php else: ?>
+                                            <input type="hidden" name="role" value="Student">
+                                            <input class="form-control" id="role" value="Student" readonly>
+                                        <?php endif; ?>
+                                    </div>
                                                 <div class="col-md-6">
                                                     <label class="form-label" for="password">Password <?= $edit
                                                         ? '<span class="text-muted">(leave blank to keep)</span>'

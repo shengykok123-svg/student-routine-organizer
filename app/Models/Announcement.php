@@ -28,7 +28,9 @@ final class Announcement
 
     public function deliver(int $announcementId, string $title, string $body, string $audience): int
     {
-        $roles = $audience === "admins" ? ["Admin"] : ($audience === "students" ? ["Student"] : ["Admin", "Student"]);
+        $roles = $audience === "admins"
+            ? ["Admin", "Super Admin"]
+            : ($audience === "students" ? ["Student"] : ["Admin", "Super Admin", "Student"]);
         $placeholders = implode(",", array_fill(0, count($roles), "?"));
         $recipients = $this->pdo->prepare(
             "SELECT user_id FROM users WHERE account_status = 'Active' AND role IN ({$placeholders})",
