@@ -24,25 +24,26 @@ final class HabitController extends Controller
         $user = $this->auth->requireLogin();
         $search = trim((string) ($_GET["search"] ?? ""));
         $status = (string) ($_GET["status"] ?? "");
+        
         if (!in_array($status, ["", "Active", "Completed"], true)) {
             $status = "";
         }
-        $week = [];
-        for ($i = 6; $i >= 0; $i--) {
-            $day = date("Y-m-d", strtotime("-" . $i . " days"));
-            $week[$day] = 0;
-        }
-        foreach ($this->logs->weeklyCounts($user) as $d => $c) {
-            if (isset($week[$d])) {
-                $week[$d] = $c;
-            }
-        }
+        
+        // Fetch data for the new Calendar and Statistics side panel
+        $heatmap = $this->logs->getHeatmapData($user, $search, $status);
+        $longestStreak = $this->habits->getMaxStreak($user);
+        $totalHabits = $this->habits->getTotalHabits($user);
+        $totalCheckins = $this->logs->getTotalCheckins($user);
+
         $this->view("habit/index", [
             "pageTitle" => "Habit Tracker",
             "habits" => $this->habits->list($user, $search, $status),
             "search" => $search,
             "status" => $status,
-            "week" => $week,
+            "heatmap" => $heatmap,
+            "longestStreak" => $longestStreak,
+            "totalHabits" => $totalHabits,
+            "totalCheckins" => $totalCheckins,
         ]);
     }
     public function createForm(): void

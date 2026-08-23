@@ -47,4 +47,39 @@ final class HabitLog
         }
         return $counts;
     }
+    public function getHeatmapData(int $user, string $search, string $status): array
+    {
+        $sql = "SELECT DATE(hl.check_in_date) as log_date, COUNT(*) as daily_total 
+                FROM habit_logs hl
+                JOIN habits h ON hl.habit_id = h.habit_id 
+                WHERE hl.user_id = ?";
+        
+        $args = [$user];
+        
+        if ($search !== "") {
+            $sql .= " AND h.habit_name LIKE ?";
+            $args[] = "%" . $search . "%";
+        }
+        if ($status !== "") {
+            $sql .= " AND h.status = ?";
+            $args[] = $status;
+        }
+        
+        $sql .= " GROUP BY DATE(hl.check_in_date)";
+        $s = $this->pdo->prepare($sql);
+        $s->execute($args);
+        
+        $data = [];
+        while ($row = $s->fetch()) {
+            $data[$row['log_date']] = (int) $row['daily_total'];
+        }
+        return $data;
+    }
+
+    public function getTotalCheckins(int $user): int
+    {
+        $s = $this->pdo->prepare("SELECT COUNT(*) FROM habit_logs WHERE user_id=?");
+        $s->execute([$user]);
+        return (int) $s->fetchColumn();
+    }
 }

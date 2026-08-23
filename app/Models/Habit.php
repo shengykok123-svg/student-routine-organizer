@@ -84,4 +84,17 @@ final class Habit
             )
             ->execute([$streak, $id, $user]);
     }
+    public function getMaxStreak(int $user): int
+    {
+        $s = $this->pdo->prepare("SELECT MAX(streak) FROM habits WHERE user_id=?");
+        $s->execute([$user]);
+        return (int) $s->fetchColumn();
+    }
+
+    public function getTotalHabits(int $user): int
+    {
+        $s = $this->pdo->prepare("SELECT COUNT(*) FROM habits WHERE user_id=?");
+        $s->execute([$user]);
+        return (int) $s->fetchColumn();
+    }
 }
