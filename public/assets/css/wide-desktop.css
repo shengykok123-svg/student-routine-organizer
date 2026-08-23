@@ -1,0 +1,413 @@
+/*
+ * Wide desktop density
+ * Keep 100% browser zoom comfortable on large monitors without changing the
+ * layout for laptops, tablets, or phones. These rules are intentionally
+ * limited to broad viewports so every module shares the same visual scale.
+ */
+@media (min-width: 1600px) {
+  html {
+    font-size: 17px;
+  }
+
+  /* Authenticated application shell */
+  .app-sidebar {
+    width: 250px;
+    padding: 24px 16px;
+  }
+
+  .brand-lockup {
+    padding: 5px 12px 32px;
+    font-size: 1.35rem;
+  }
+
+  .brand-mark {
+    width: 36px;
+    height: 36px;
+  }
+
+  .sidebar-link {
+    height: 52px;
+    gap: 15px;
+    padding: 0 14px;
+  }
+
+  .sidebar-link i,
+  .sidebar-icon {
+    font-size: 1.15rem;
+  }
+
+  .sidebar-link img.sidebar-icon,
+  .sidebar-logout .sidebar-icon {
+    width: 24px;
+    height: 24px;
+    flex-basis: 24px;
+  }
+
+  .sidebar-section-label {
+    margin-top: 28px;
+  }
+
+  .app-topbar {
+    height: 84px;
+    padding: 0 44px;
+  }
+
+  .topbar-controls {
+    height: 36px;
+    gap: 14px;
+  }
+
+  .topbar-controls .theme-toggle {
+    flex-basis: 54px;
+    min-width: 54px;
+    width: 54px;
+    height: 32px;
+  }
+
+  .topbar-controls .theme-toggle-track {
+    width: 54px;
+    height: 32px;
+    flex-basis: 54px;
+  }
+
+  .topbar-controls .theme-toggle-thumb {
+    width: 24px;
+    height: 24px;
+  }
+
+  html[data-theme="dark"] .topbar-controls .theme-toggle-thumb {
+    transform: translateX(24px);
+  }
+
+  .topbar-controls .theme-toggle-icon {
+    font-size: 0.75rem;
+  }
+
+  .topbar-controls .theme-toggle-icon-sun {
+    right: 8px;
+  }
+
+  .topbar-controls .theme-toggle-icon-moon {
+    left: 8px;
+  }
+
+  .topbar-bell {
+    flex-basis: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    font-size: 1.25rem;
+  }
+
+  .user-avatar {
+    width: 42px;
+    height: 42px;
+  }
+
+  .app-content {
+    max-width: 1780px;
+    padding: 42px 48px 62px;
+    font-size: 1.06rem;
+  }
+
+  .app-content h1 {
+    font-size: 2.1rem;
+  }
+
+  .app-content h2 {
+    font-size: 1.3rem;
+  }
+
+  .app-content .page-subtitle {
+    font-size: 1.06rem;
+  }
+
+  .content-card {
+    padding: 28px;
+  }
+
+  .filter-panel,
+  .form-panel {
+    padding: 24px;
+  }
+
+  .stats-grid {
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    min-height: 126px;
+    padding: 23px;
+  }
+
+  .app-content .stat-card h2 {
+    font-size: 1.68rem;
+  }
+
+  .stat-icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .dashboard-grid {
+    gap: 24px;
+    grid-template-columns: minmax(0, 1.08fr) minmax(560px, 1fr);
+  }
+
+  .app-table {
+    font-size: 0.94rem;
+  }
+
+  .app-table thead th,
+  .app-table tbody td {
+    padding: 16px 20px;
+  }
+
+  /* Login and registration */
+  .auth-main:not(.landing-main) {
+    padding: 72px 44px;
+  }
+
+  .auth-login-card {
+    width: min(1220px, 100%);
+    min-height: 700px;
+  }
+
+  .auth-visual {
+    padding: 56px 54px;
+  }
+
+  .auth-visual .auth-brand {
+    margin-bottom: 62px;
+  }
+
+  .auth-visual h1,
+  .auth-form-pane h2 {
+    font-size: 2.35rem;
+  }
+
+  .auth-illustration {
+    height: 278px;
+  }
+
+  .auth-form-pane {
+    padding: 78px 82px;
+  }
+
+  .auth-register-layout {
+    width: min(1300px, 100%);
+    grid-template-columns: minmax(430px, 1fr) minmax(520px, 620px);
+    gap: 78px;
+  }
+
+  .register-visual {
+    min-height: 700px;
+    padding: 46px 34px;
+  }
+
+  .auth-register-card {
+    padding: 44px 48px;
+  }
+
+  /* Guest landing page */
+  .landing-page .landing-container {
+    width: min(1480px, calc(100% - 96px));
+  }
+
+  .landing-nav {
+    height: 88px;
+    padding-inline: max(48px, calc((100vw - 1480px) / 2));
+    gap: 38px;
+  }
+
+  .landing-brand .landing-logo {
+    width: 42px;
+    height: 42px;
+  }
+
+  .landing-brand strong {
+    font-size: 1.15rem;
+  }
+
+  .landing-brand small {
+    font-size: 0.68rem;
+  }
+
+  .landing-nav-links {
+    gap: 36px;
+  }
+
+  .landing-nav-links a,
+  .landing-nav-actions .btn {
+    font-size: 0.86rem;
+  }
+
+  .landing-nav-actions .btn {
+    min-width: 88px;
+    padding: 0.62rem 1rem;
+  }
+
+  .landing-nav-actions .theme-toggle {
+    min-width: 54px;
+  }
+
+  .landing-hero {
+    min-height: 540px;
+    grid-template-columns: 0.96fr 1.04fr;
+    gap: 72px;
+    padding: 66px 0 54px;
+  }
+
+  .landing-copy h1 {
+    max-width: 740px;
+    font-size: clamp(3.2rem, 3.25vw, 4.55rem);
+  }
+
+  .landing-copy > p {
+    max-width: 655px;
+    margin: 24px 0 30px;
+    font-size: 1.08rem;
+  }
+
+  .landing-cta .btn {
+    min-width: 190px;
+    padding: 0.82rem 1.35rem;
+    font-size: 0.96rem;
+  }
+
+  .landing-trust-list {
+    margin-top: 38px;
+  }
+
+  .landing-trust-list li {
+    gap: 11px;
+    padding-inline: 24px;
+  }
+
+  .landing-trust-list > li > i {
+    font-size: 1.25rem;
+  }
+
+  .landing-trust-list strong {
+    font-size: 0.81rem;
+  }
+
+  .landing-trust-list small {
+    font-size: 0.69rem;
+  }
+
+  .landing-hero-illustration {
+    max-width: 680px;
+  }
+
+  .landing-features,
+  .landing-benefits {
+    padding: 52px 0 60px;
+  }
+
+  .landing-section-heading {
+    margin-bottom: 32px;
+  }
+
+  .landing-section-heading h2 {
+    font-size: 1.65rem;
+  }
+
+  .landing-section-heading p {
+    font-size: 0.95rem;
+  }
+
+  .landing-module-grid {
+    gap: 20px;
+  }
+
+  .landing-module-card {
+    min-height: 184px;
+    gap: 16px;
+    padding: 22px;
+    border-radius: 13px;
+  }
+
+  .landing-module-card img {
+    width: 62px;
+    height: 62px;
+    flex-basis: 62px;
+  }
+
+  .landing-module-card h3 {
+    margin-top: 4px;
+    font-size: 0.9rem;
+  }
+
+  .landing-module-card p,
+  .landing-module-card a {
+    font-size: 0.75rem;
+  }
+
+  .landing-benefits-layout {
+    gap: 76px;
+  }
+
+  .landing-benefit-grid {
+    gap: 28px 32px;
+  }
+
+  .landing-benefit-grid > article > i {
+    font-size: 2.1rem;
+  }
+
+  .landing-benefit-grid h3 {
+    font-size: 0.9rem;
+  }
+
+  .landing-benefit-grid p {
+    font-size: 0.75rem;
+  }
+
+  .landing-dashboard-preview {
+    border-radius: 17px;
+  }
+
+  .preview-topbar {
+    padding: 14px 17px;
+  }
+
+  .preview-body {
+    padding: 20px;
+  }
+
+  .preview-chart svg {
+    height: 88px;
+  }
+
+  .landing-footer {
+    padding: 42px 0 18px;
+  }
+}
+
+@media (min-width: 2200px) {
+  html {
+    font-size: 18px;
+  }
+
+  .app-content {
+    max-width: 1940px;
+  }
+
+  .landing-page .landing-container {
+    width: min(1640px, calc(100% - 128px));
+  }
+
+  .landing-nav {
+    padding-inline: max(64px, calc((100vw - 1640px) / 2));
+  }
+
+  .landing-hero {
+    min-height: 590px;
+    gap: 96px;
+  }
+
+  .landing-hero-illustration {
+    max-width: 740px;
+  }
+}
