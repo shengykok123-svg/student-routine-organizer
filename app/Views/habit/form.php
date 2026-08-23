@@ -3,6 +3,10 @@
 use App\Core\Csrf;
 use App\Core\View;
 
+/** @var string $baseUrl */
+/** @var array|null $habit */
+/** @var array $errors */
+
 $edit = isset($habit["habit_id"]);
 $days = [
     "0" => "Sunday",

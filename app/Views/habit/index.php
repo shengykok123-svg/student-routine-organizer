@@ -1,6 +1,15 @@
 <?php
 use App\Core\Csrf;
 use App\Core\View;
+
+/** @var string $baseUrl */
+/** @var array $habits */
+/** @var string $search */
+/** @var string $status */
+/** @var array $heatmap */
+/** @var int $longestStreak */
+/** @var int $totalHabits */
+/** @var int $totalCheckins */
 ?>
 
 <!-- Calendar Specific Styles -->
